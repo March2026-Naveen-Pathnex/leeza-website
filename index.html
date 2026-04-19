@@ -81,6 +81,7 @@ h1,h2,h3,.logo-text{font-family:'Fredoka',sans-serif;}
   display:flex;align-items:center;justify-content:space-between;
   transition:background .3s,box-shadow .3s;
   background:transparent;
+  position:sticky;top:0;
 }
 #navbar.scrolled{
   background:rgba(255,253,248,0.92);
@@ -140,7 +141,6 @@ h1,h2,h3,.logo-text{font-family:'Fredoka',sans-serif;}
 .hamburger span{display:block;width:22px;height:2px;background:var(--choco);border-radius:2px;transition:.3s;}
 .mobile-menu{
   display:none;position:absolute;top:100%;left:0;right:0;z-index:999;
-  padding-top:70px;
   background:rgba(255,253,248,0.97);backdrop-filter:blur(20px);
   padding:16px 5%;box-shadow:0 8px 24px rgba(0,0,0,0.08);
   border-bottom:1px solid rgba(255,107,158,0.1);
@@ -956,15 +956,17 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
       <span></span><span></span><span></span>
     </button>
   </div>
+
+  <!-- Mobile menu INSIDE nav so it follows sticky position -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about"        onclick="closeMobile()">About</a>
+    <a href="#menu"         onclick="closeMobile()">Menu</a>
+    <a href="#gallery"      onclick="closeMobile()">Gallery</a>
+    <a href="#testimonials" onclick="closeMobile()">Reviews</a>
+    <a href="#contact"      onclick="closeMobile()">Contact</a>
+    <a href="#order-cta" class="btn-nav-order" onclick="closeMobile()">Order Now 🍧</a>
+  </div>
 </nav>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#about"        onclick="closeMobile()">About</a>
-  <a href="#menu"         onclick="closeMobile()">Menu</a>
-  <a href="#gallery"      onclick="closeMobile()">Gallery</a>
-  <a href="#testimonials" onclick="closeMobile()">Reviews</a>
-  <a href="#contact"      onclick="closeMobile()">Contact</a>
-  <a href="#order-cta" class="btn-nav-order" onclick="closeMobile()">Order Now 🍧</a>
-</div>
 
 <!-- ══ HERO ══════════════════════════════════ -->
 <section id="home" style="padding:0;">
