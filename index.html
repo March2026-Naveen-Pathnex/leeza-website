@@ -110,11 +110,13 @@ h1,h2,h3,.logo-text{font-family:'Fredoka',sans-serif;}
 }
 .cart-btn:hover{background:var(--blush);}
 .cart-badge{
-  position:absolute;top:-2px;right:-2px;
-  width:18px;height:18px;border-radius:50%;
-  background:var(--pink);color:#fff;
-  font-size:10px;font-weight:700;
+  position:absolute;top:-4px;right:-4px;
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,#FF5C8A,#FF9AC1);color:#fff;
+  font-size:12px;font-weight:800;
   display:none;align-items:center;justify-content:center;
+  border:2px solid #fff;
+  box-shadow:0 2px 8px rgba(255,92,138,0.4);
 }
 @keyframes badgePop{
   0%{transform:scale(0);}
@@ -946,7 +948,7 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
   <div class="nav-actions">
     <button class="cart-btn" id="navCartBtn" title="Cart">
   🛒
-  <span class="cart-badge" id="navCartBadge" style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:800;color:#fff;position:absolute;top:-4px;right:-4px;display:none;align-items:center;justify-content:center;border:2px solid #fff;animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);">0</span>
+  <span class="cart-badge" id="navCartBadge" style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);width:24px;height:24px;font-size:12px;;border-radius:50%;font-size:10px;font-weight:800;color:#fff;position:absolute;top:-4px;right:-4px;display:none;align-items:center;justify-content:center;border:2px solid #fff;animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);">0</span>
 </button>
     <a href="#order-cta" class="btn-nav-order">Order Now 🍧</a>
     <button class="hamburger" id="hamburger">
@@ -1595,7 +1597,7 @@ window.scGoTo=scGoTo;window.scNav=scNav;scRender();
 <div class="fab-group">
   <button class="fab fab-cart" onclick="openCart()" title="Cart">
   🛒
-  <span class="cart-badge" id="fabBadge" style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;color:#fff;position:absolute;top:-4px;right:-4px;display:none;align-items:center;justify-content:center;border:2px solid #fff;animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);">0</span>
+  <span class="cart-badge" id="fabBadge" style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);width:26px;height:26px;font-size:12px;;border-radius:50%;font-size:11px;font-weight:800;color:#fff;position:absolute;top:-4px;right:-4px;display:none;align-items:center;justify-content:center;border:2px solid #fff;animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);">0</span>
 </button>
   <a href="https://wa.me/919050506929?text=Hi! I want to order from Leeza 🍦" target="_blank" class="fab fab-wa" title="WhatsApp">💬</a>
   <a href="tel:+919050506929" class="fab fab-call" title="Call Us">📞</a>
