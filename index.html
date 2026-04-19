@@ -1259,6 +1259,7 @@ function scNav(dir){scIdx=(scIdx+dir+SC_FLAVORS.length)%SC_FLAVORS.length;scRend
 function scGoTo(i){scIdx=i;scRender();}
 function scAddToCart(){const f=SC_FLAVORS[scIdx];if(typeof addToCart==='function')addToCart(f.id);else showToast('🍦 '+f.name+' added!');}
 window.scGoTo=scGoTo;window.scNav=scNav;scRender();
+setInterval(()=>{ scIdx=(scIdx+1)%SC_FLAVORS.length; scRender(); }, 4);
 </script>
 </section>
 <!-- ══ GALLERY ════════════════════════════════ -->
