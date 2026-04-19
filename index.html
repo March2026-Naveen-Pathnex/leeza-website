@@ -1185,6 +1185,69 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
   </div>
 </section>
 
+<!-- ══ FLAVOR SHOWCASE ══════════════════════ -->
+<section id="showcase" style="padding:0;overflow:hidden;">
+<style>
+#showcase{background:#FFF0F0;}
+.sc-wrap{position:relative;min-height:88vh;display:flex;align-items:center;overflow:hidden;transition:background .7s;}
+.sc-bg-letter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka',sans-serif;font-size:clamp(200px,40vw,420px);font-weight:700;color:rgba(255,255,255,0.55);line-height:1;pointer-events:none;user-select:none;transition:all .7s;white-space:nowrap;letter-spacing:-20px;}
+.sc-float-item{position:absolute;pointer-events:none;animation:scFloat 4s ease-in-out infinite;}
+@keyframes scFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-20px) rotate(8deg);}}
+.sc-left{padding:60px 5% 60px 6%;max-width:320px;position:relative;z-index:2;}
+.sc-flavor-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:12px;}
+.sc-flavor-name{font-family:'Fredoka',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:700;color:#fff;line-height:1.1;margin-bottom:14px;transition:all .5s;}
+.sc-flavor-desc{font-size:14px;color:rgba(255,255,255,0.8);line-height:1.65;margin-bottom:28px;max-width:260px;}
+.sc-add-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:999px;border:2px solid rgba(255,255,255,0.8);background:transparent;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .25s;}
+.sc-add-btn:hover{background:#fff;color:var(--pink);}
+.sc-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:clamp(280px,40vw,480px);pointer-events:none;transition:all .6s cubic-bezier(.34,1.56,.64,1);}
+.sc-center img{width:100%;filter:drop-shadow(0 30px 60px rgba(0,0,0,0.2));}
+.sc-right{margin-left:auto;padding:60px 6% 60px 5%;max-width:280px;position:relative;z-index:2;text-align:right;}
+.sc-choose-label{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:6px;}
+.sc-choose-sub{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:20px;}
+.sc-nav{display:flex;gap:10px;justify-content:flex-end;margin-bottom:20px;}
+.sc-nav-btn{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);background:transparent;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.sc-nav-btn:hover{background:rgba(255,255,255,0.2);}
+.sc-thumbs{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.sc-thumb{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,0.15);cursor:pointer;transition:all .25s;border:1.5px solid transparent;}
+.sc-thumb:hover,.sc-thumb.active{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.5);}
+.sc-thumb-img{width:44px;height:44px;border-radius:12px;object-fit:cover;flex-shrink:0;}
+.sc-thumb-name{font-size:13px;font-weight:600;color:#fff;}
+@media(max-width:768px){.sc-center{width:clamp(200px,60vw,320px);top:30%;}.sc-right{display:none;}.sc-bg-letter{font-size:clamp(120px,45vw,280px);}}
+</style>
+<div class="sc-wrap" id="scWrap">
+  <img src="https://images.unsplash.com/photo-1467139701929-18c0d27a7516?w=80&h=80&fit=crop" class="sc-float-item" style="width:70px;height:70px;border-radius:50%;top:12%;left:8%;animation-delay:0s;object-fit:cover;">
+  <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=80&h=80&fit=crop" class="sc-float-item" style="width:55px;height:55px;border-radius:50%;top:20%;right:18%;animation-delay:.8s;object-fit:cover;">
+  <img src="https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=80&h=80&fit=crop" class="sc-float-item" style="width:65px;height:65px;border-radius:50%;bottom:20%;left:12%;animation-delay:1.4s;object-fit:cover;">
+  <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=80&h=80&fit=crop" class="sc-float-item" style="width:50px;height:50px;border-radius:50%;top:60%;right:8%;animation-delay:2s;object-fit:cover;">
+  <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=80&h=80&fit=crop" class="sc-float-item" style="width:60px;height:60px;border-radius:50%;top:8%;left:40%;animation-delay:.4s;object-fit:cover;">
+  <div class="sc-bg-letter" id="scBgLetter">MANGO</div>
+  <div class="sc-left">
+    <div class="sc-flavor-tag">Featured Flavor</div>
+    <div class="sc-flavor-name" id="scName">Mango Tango</div>
+    <div class="sc-flavor-desc" id="scDesc">Alphonso mango sorbet with a tropical twist. Seasonal favourite — bursting with real fruit flavour in every scoop.</div>
+    <button class="sc-add-btn" onclick="scAddToCart()">+ Add to Cart &nbsp; ₹<span id="scPrice">129</span></button>
+  </div>
+  <div class="sc-center"><img id="scImg" src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=700&fit=crop" alt="Featured flavor"></div>
+  <div class="sc-right">
+    <div class="sc-choose-label">Choose your extra taste</div>
+    <div class="sc-choose-sub">Caution: you run the risk of wanting each of them</div>
+    <div class="sc-nav">
+      <button class="sc-nav-btn" onclick="scNav(-1)">‹</button>
+      <button class="sc-nav-btn" onclick="scNav(1)">›</button>
+    </div>
+    <div class="sc-thumbs" id="scThumbs"></div>
+  </div>
+</div>
+<script>
+const SC_FLAVORS=[{id:'s4',name:'Mango Tango',desc:'Alphonso mango sorbet with a tropical twist. Seasonal favourite — bursting with real fruit.',price:129,color:'#F5843A',letter:'MANGO',img:'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=700&fit=crop'},{id:'s3',name:'Strawberry Bliss',desc:'Fresh Mahabaleshwar strawberries blended into creamy perfection. Zero artificial colour.',price:109,color:'#E8567A',letter:'BERRY',img:'https://images.unsplash.com/photo-1625575080259-662349b6abf3?w=600&h=700&fit=crop'},{id:'s2',name:'Belgian Chocolate',desc:'72% single-origin Belgian cacao churned into velvet richness. For serious chocolate lovers.',price:119,color:'#7B3F20',letter:'CHOCO',img:'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&h=700&fit=crop'},{id:'s1',name:'Classic Vanilla',desc:'Madagascar vanilla bean ice cream churned fresh daily. The timeless classic, done perfectly.',price:99,color:'#D4873A',letter:'VANILLA',img:'https://images.unsplash.com/photo-1560008581-09826d1de69e?w=600&h=700&fit=crop'},{id:'su1',name:'Choco Fudge Sundae',desc:'Three scoops with hot fudge, roasted nuts & whipped cream. The ultimate indulgence.',price:249,color:'#4A2511',letter:'FUDGE',img:'https://images.unsplash.com/photo-1514849302-984523450cf4?w=600&h=700&fit=crop'}];
+let scIdx=0;
+function scRender(){const f=SC_FLAVORS[scIdx];document.getElementById('scWrap').style.background=`linear-gradient(135deg,${f.color} 0%,${f.color}CC 100%)`;document.getElementById('scBgLetter').textContent=f.letter;document.getElementById('scName').textContent=f.name;document.getElementById('scDesc').textContent=f.desc;document.getElementById('scPrice').textContent=f.price;const img=document.getElementById('scImg');img.style.opacity='0';img.style.transform='scale(0.88)';setTimeout(()=>{img.src=f.img;img.style.opacity='1';img.style.transform='scale(1)';img.style.transition='all .5s cubic-bezier(.34,1.56,.64,1)';},150);document.getElementById('scThumbs').innerHTML=SC_FLAVORS.slice(0,3).map(fl=>`<div class="sc-thumb ${fl.id===f.id?'active':''}" onclick="scGoTo(${SC_FLAVORS.indexOf(fl)})"><img src="${fl.img}" class="sc-thumb-img"><span class="sc-thumb-name">${fl.name}</span></div>`).join('');}
+function scNav(dir){scIdx=(scIdx+dir+SC_FLAVORS.length)%SC_FLAVORS.length;scRender();}
+function scGoTo(i){scIdx=i;scRender();}
+function scAddToCart(){const f=SC_FLAVORS[scIdx];if(typeof addToCart==='function')addToCart(f.id);else showToast('🍦 '+f.name+' added!');}
+window.scGoTo=scGoTo;window.scNav=scNav;scRender();
+</script>
+</section>
 <!-- ══ GALLERY ════════════════════════════════ -->
  <section id="popular">
   <div class="container">
