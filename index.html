@@ -2312,6 +2312,29 @@ function setDelivery(mode){
     <button onclick="detectLocation()" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid rgba(255,92,138,0.35);background:linear-gradient(135deg,#FF5C8A,#FF9AC1);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
       📍 Use My Current Location
     </button>
+    <button onclick="toggleMapPicker()" id="mapPickerBtn" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid #FF5C8A;background:#fff;color:#FF5C8A;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+      🗺️ Select on Map
+    </button>
+    <div id="mapPickerContainer" style="display:none;border-radius:14px;overflow:hidden;border:1.5px solid rgba(255,92,138,0.2);margin-bottom:8px;">
+      <div id="leafletMapPicker" style="height:240px;width:100%;"></div>
+      <div style="padding:12px;background:#FFF8F0;">
+        <div style="font-size:12px;color:#6B5446;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+          <span style="font-size:14px;">📌</span>
+          <span><strong>Drag the pin</strong> or tap anywhere to set your location</span>
+        </div>
+        <div id="mapPickerAddress" style="font-size:12px;color:#4A2511;background:#fff;padding:8px 10px;border-radius:10px;border:1px solid rgba(74,37,17,0.1);min-height:32px;line-height:1.5;">Move pin to see address...</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+          <div style="height:1px;flex:1;background:rgba(74,37,17,0.1);"></div>
+          <span style="font-size:10px;color:#6B5446;font-weight:700;letter-spacing:0.5px;">OR TYPE MANUALLY</span>
+          <div style="height:1px;flex:1;background:rgba(74,37,17,0.1);"></div>
+        </div>
+        <input id="mapManualInput" type="text" placeholder="e.g. House 12, Sector 4, Palwal..."
+          style="width:100%;margin-top:8px;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(255,92,138,0.25);background:#fff;font-size:13px;font-family:'Outfit',sans-serif;outline:none;color:#4A2511;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#FF5C8A'" onblur="this.style.borderColor='rgba(255,92,138,0.25)'"
+          oninput="clearTimeout(window._geoTimer); window._geoTimer=setTimeout(()=>_geocodeAddress(this.value),800)">
+        <button onclick="confirmMapPicker()" style="width:100%;margin-top:10px;padding:11px;border-radius:999px;background:linear-gradient(135deg,#FF5C8A,#FF9AC1);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;box-shadow:0 4px 14px rgba(255,92,138,0.3);">✓ Confirm This Location</button>
+      </div>
+    </div>
     <div id="locationStatus" style="font-size:12px;color:var(--choco-lt);text-align:center;min-height:16px;margin-bottom:6px;"></div>
     <div style="position:relative;">
       <input id="deliveryAddress" type="text" placeholder="Or type address manually..." autocomplete="off"
@@ -2321,9 +2344,125 @@ function setDelivery(mode){
       <div id="addressSuggestions" style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border-radius:12px;border:1.5px solid rgba(255,92,138,0.2);box-shadow:0 8px 24px rgba(42,14,5,0.12);z-index:100;max-height:240px;overflow-y:auto;display:none;"></div>
     </div>
   </div>`;
+    // Load Leaflet once (for map picker)
+    if(!window._leafletLoaded){
+      window._leafletLoaded = true;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+      document.head.appendChild(link);
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+      document.head.appendChild(script);
+    }
   } else {
     info.innerHTML = '<span>🏪</span><span>Pickup ready in <strong>15 mins</strong> · Leeza, Palwal</span>';
   }
+}
+
+/* ── MAP PICKER WITH DRAGGABLE PIN ── */
+let _mapPickerOpen = false, _mapPickerInstance = null, _mapPickerMarker = null;
+
+function toggleMapPicker(){
+  _mapPickerOpen = !_mapPickerOpen;
+  const c = document.getElementById('mapPickerContainer');
+  const btn = document.getElementById('mapPickerBtn');
+  if(!c || !btn) return;
+  c.style.display = _mapPickerOpen ? 'block' : 'none';
+  btn.innerHTML = _mapPickerOpen ? '✕ Close Map' : '🗺️ Select on Map';
+  btn.style.borderColor = _mapPickerOpen ? '#D4537E' : '#FF5C8A';
+  btn.style.color = _mapPickerOpen ? '#D4537E' : '#FF5C8A';
+
+  if(_mapPickerOpen && !_mapPickerInstance){
+    const tryInit = ()=>{
+      if(!window.L){ setTimeout(tryInit, 200); return; }
+      const defaultLat = deliveryLat || 28.1473;
+      const defaultLon = deliveryLon || 77.3320;
+      _mapPickerInstance = L.map('leafletMapPicker').setView([defaultLat, defaultLon], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(_mapPickerInstance);
+
+      // Draggable pink pin
+      const pinIcon = L.divIcon({
+        html:'<div style="position:relative;"><div style="width:36px;height:36px;border-radius:50% 50% 50% 0;background:linear-gradient(135deg,#FF5C8A,#FF9AC1);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 4px 12px rgba(255,92,138,0.5);cursor:grab;"><span style="transform:rotate(45deg);font-size:16px;">📍</span></div></div>',
+        iconSize:[36,36], iconAnchor:[18,36], className:''
+      });
+
+      _mapPickerMarker = L.marker([defaultLat, defaultLon],{draggable:true, icon:pinIcon}).addTo(_mapPickerInstance);
+      _mapPickerMarker.bindTooltip('Drag me!',{permanent:false, direction:'top', offset:[0,-36]});
+
+      // Drag handler
+      _mapPickerMarker.on('dragstart', ()=>{ _mapPickerMarker.closeTooltip(); });
+      _mapPickerMarker.on('dragend', e=>{
+        const p = e.target.getLatLng();
+        _reverseGeocode(p.lat, p.lng);
+      });
+
+      // Click on map to move pin
+      _mapPickerInstance.on('click', e=>{
+        _mapPickerMarker.setLatLng(e.latlng);
+        _reverseGeocode(e.latlng.lat, e.latlng.lng);
+      });
+
+      setTimeout(()=>_mapPickerInstance.invalidateSize(), 100);
+      // Auto-fetch initial address
+      _reverseGeocode(defaultLat, defaultLon);
+    };
+    setTimeout(tryInit, 150);
+  } else if(_mapPickerOpen && _mapPickerInstance){
+    setTimeout(()=>_mapPickerInstance.invalidateSize(), 150);
+  }
+}
+
+async function _reverseGeocode(lat, lon){
+  deliveryLat = lat; deliveryLon = lon;
+  const el = document.getElementById('mapPickerAddress');
+  if(el) el.textContent = 'Fetching address...';
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en&addressdetails=1`);
+    const data = await res.json();
+    const a = data.address || {};
+    const parts = [a.house_number, a.road||a.pedestrian||a.footway, a.neighbourhood||a.suburb||a.residential, a.village||a.town||a.city_district||a.city, a.state, a.postcode].filter(Boolean);
+    const addr = parts.join(', ') || data.display_name;
+    if(el) el.textContent = addr;
+  } catch(e){
+    if(el) el.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+  }
+}
+
+async function _geocodeAddress(addr){
+  if(!addr.trim() || addr.trim().length < 3) return;
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1&countrycodes=in`);
+    const data = await res.json();
+    if(data && data[0]){
+      const lat = parseFloat(data[0].lat);
+      const lon = parseFloat(data[0].lon);
+      deliveryLat = lat; deliveryLon = lon;
+      if(_mapPickerInstance && _mapPickerMarker){
+        _mapPickerInstance.setView([lat, lon], 16);
+        _mapPickerMarker.setLatLng([lat, lon]);
+      }
+      const el = document.getElementById('mapPickerAddress');
+      if(el) el.textContent = data[0].display_name;
+    }
+  } catch(e){}
+}
+
+function confirmMapPicker(){
+  const mapAddr = document.getElementById('mapPickerAddress')?.textContent;
+  const manualAddr = document.getElementById('mapManualInput')?.value.trim();
+  const finalAddr = manualAddr || mapAddr;
+  const addrInput = document.getElementById('deliveryAddress');
+  if(addrInput && finalAddr) addrInput.value = finalAddr;
+  const status = document.getElementById('locationStatus');
+  if(status) status.textContent = '✅ Location confirmed!';
+  _mapPickerOpen = false;
+  if(_mapPickerInstance){ _mapPickerInstance.remove(); _mapPickerInstance = null; _mapPickerMarker = null; }
+  const c = document.getElementById('mapPickerContainer');
+  if(c) c.style.display = 'none';
+  const btn = document.getElementById('mapPickerBtn');
+  if(btn){ btn.innerHTML = '🗺️ Select on Map'; btn.style.borderColor = '#FF5C8A'; btn.style.color = '#FF5C8A'; }
+  showToast('📍 Delivery location set!');
 }
 
 /* ── AUTO ADDRESS SUGGESTIONS ── */
@@ -2340,8 +2479,8 @@ async function fetchAddressSuggestions(query){
       const a = item.address || {};
       const main = a.road || a.neighbourhood || a.suburb || a.village || a.town || item.display_name.split(',')[0];
       const sub = [a.suburb, a.city || a.town || a.village, a.state, a.postcode].filter(Boolean).join(', ');
-      const safe = item.display_name.replace(/"/g,'&quot;');
-      return `<div onclick="selectSuggestion('${safe}', ${item.lat}, ${item.lon})" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(74,37,17,0.06);transition:background .15s;" onmouseover="this.style.background='#FFF0F3'" onmouseout="this.style.background='#fff'">
+      const safe = item.display_name.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+      return `<div onclick="selectSuggestion(&quot;${safe}&quot;, ${item.lat}, ${item.lon})" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(74,37,17,0.06);transition:background .15s;" onmouseover="this.style.background='#FFF0F3'" onmouseout="this.style.background='#fff'">
         <div style="display:flex;align-items:flex-start;gap:8px;">
           <span style="font-size:14px;margin-top:1px;">📍</span>
           <div style="flex:1;min-width:0;">
