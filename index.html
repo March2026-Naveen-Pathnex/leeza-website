@@ -945,6 +945,7 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
     <a href="#gallery">Gallery</a>
     <a href="#testimonials">Reviews</a>
     <a href="#contact">Contact</a>
+    <a href="#" onclick="event.preventDefault();openTrackingFromFab();" style="color:#FF5C8A;font-weight:600;">🚀 Track Order</a>
   </div>
   <div class="nav-actions">
     <button class="cart-btn" id="navCartBtn" title="Cart">
@@ -964,6 +965,7 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
     <a href="#gallery"      onclick="closeMobile()">Gallery</a>
     <a href="#testimonials" onclick="closeMobile()">Reviews</a>
     <a href="#contact"      onclick="closeMobile()">Contact</a>
+    <a href="#" onclick="event.preventDefault();closeMobile();openTrackingFromFab();" style="color:#FF5C8A;font-weight:600;">🚀 Track Order</a>
     <a href="#order-cta" class="btn-nav-order" onclick="closeMobile()">Order Now 🍧</a>
   </div>
 </nav>
@@ -1500,57 +1502,122 @@ setInterval(()=>{ scIdx=(scIdx+1)%SC_FLAVORS.length; scRender(); }, 4000);
 
 <!-- ══ ORDER TRACKING MODAL ══════════════════ -->
 <div class="track-overlay" id="trackOverlay">
-  <div class="track-modal">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <h3 class="track-title">🚀 Live Order Tracking</h3>
-      <button class="track-close" style="width:32px;height:32px;border-radius:50%;background:var(--cream);border:none;cursor:pointer;font-size:18px;" onclick="closeTracking()">×</button>
-    </div>
-    <div style="font-size:12px;color:var(--choco-lt);margin-bottom:22px;background:var(--cream);padding:8px 14px;border-radius:var(--r-pill);display:inline-block;font-weight:600;" id="trackOrderId">Order ID: —</div>
+  <div class="track-modal" style="max-width:480px;padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column;">
 
-    <div class="track-steps">
-      <div class="track-step done" id="ts1">
-        <div class="track-icon">✓</div>
-        <div class="track-body">
-          <div class="track-step-name">Order Confirmed</div>
-          <div class="track-step-sub">We've received your order!</div>
-        </div>
-      </div>
-      <div class="track-step done" id="ts2">
-        <div class="track-icon">✓</div>
-        <div class="track-body">
-          <div class="track-step-name">Payment Verified</div>
-          <div class="track-step-sub">UPI payment confirmed</div>
-        </div>
-      </div>
-      <div class="track-step active" id="ts3">
-        <div class="track-icon">🍦</div>
-        <div class="track-body">
-          <div class="track-step-name">Preparing Your Order</div>
-          <div class="track-step-sub">Our artisans are handcrafting your scoops</div>
-        </div>
-      </div>
-      <div class="track-step" id="ts4">
-        <div class="track-icon">🛵</div>
-        <div class="track-body">
-          <div class="track-step-name">Out for Delivery</div>
-          <div class="track-step-sub">On the way to you!</div>
-        </div>
-      </div>
-      <div class="track-step" id="ts5">
-        <div class="track-icon">🎉</div>
-        <div class="track-body">
-          <div class="track-step-name">Delivered!</div>
-          <div class="track-step-sub">Enjoy your ice cream 🍦</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="track-eta">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <div>
-        <div class="track-eta-label">Estimated Delivery</div>
-        <div class="track-eta-time" id="trackEta">25 min</div>
+        <div style="font-family:'Fredoka',sans-serif;font-size:20px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px;">🚀 Live Tracking</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.85);margin-top:3px;display:flex;align-items:center;gap:5px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#AAFFC8;animation:lzBlink 1.5s ease-in-out infinite;"></span>
+          Updated just now
+        </div>
       </div>
-      <div style="font-size:32px;">🛵</div>
+      <button style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;cursor:pointer;color:#fff;font-size:20px;line-height:1;" onclick="closeTracking()">×</button>
+    </div>
+
+    <!-- Scrollable body -->
+    <div style="overflow-y:auto;padding:18px 22px 22px;">
+
+      <!-- Order ID + ETA banner -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <div style="flex:1;background:var(--cream);border-radius:14px;padding:10px 14px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--choco-lt);text-transform:uppercase;">Order ID</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;color:var(--choco);" id="trackOrderId">LZ000000</div>
+        </div>
+        <div style="flex:1;background:linear-gradient(135deg,#FF5C8A,#FF9AC1);border-radius:14px;padding:10px 14px;color:#fff;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.85;">Arriving in</div>
+          <div style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;" id="trackEta">25 min</div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div style="background:var(--cream);border-radius:14px;padding:14px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:12px;font-weight:600;color:var(--choco);" id="progressLabel">🍦 Preparing your order</span>
+          <span style="font-size:12px;font-weight:700;color:var(--pink);" id="progressPct">40%</span>
+        </div>
+        <div style="width:100%;height:8px;background:#fff;border-radius:4px;overflow:hidden;">
+          <div id="progressFill" style="height:100%;width:40%;background:linear-gradient(90deg,#FF5C8A,#FF9AC1);border-radius:4px;transition:width .8s ease;"></div>
+        </div>
+      </div>
+
+      <!-- Live map -->
+      <div style="border-radius:14px;overflow:hidden;border:1.5px solid rgba(255,92,138,0.15);margin-bottom:16px;position:relative;">
+        <div id="trackMap" style="height:180px;width:100%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;color:var(--choco-lt);font-size:12px;">
+            <div style="font-size:28px;margin-bottom:4px;">🗺️</div>
+            Loading live map...
+          </div>
+        </div>
+        <div id="mapOverlayInfo" style="position:absolute;bottom:10px;left:10px;right:10px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:10px;padding:8px 12px;display:none;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.08);">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF5C8A,#FF9AC1);display:flex;align-items:center;justify-content:center;font-size:16px;">🛵</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:700;color:var(--choco);" id="mapDistanceText">1.8 km away</div>
+            <div style="font-size:10px;color:var(--choco-lt);" id="mapMovingText">Moving towards you</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rider card (shown when out for delivery) -->
+      <div id="riderCard" style="display:none;background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:16px;border:1.5px solid rgba(255,92,138,0.15);box-shadow:0 4px 14px rgba(255,92,138,0.08);">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FFCBA4,#FF9AC1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">👨‍🍳</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--pink);text-transform:uppercase;">Your Delivery Partner</div>
+            <div style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600;color:var(--choco);" id="riderName">Rahul Kumar</div>
+            <div style="font-size:11px;color:var(--choco-lt);">⭐ 4.9 · <span id="riderBike">HR-38-AB-1234</span></div>
+          </div>
+          <a href="tel:+919050506929" style="width:38px;height:38px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:16px;text-decoration:none;box-shadow:0 3px 10px rgba(37,211,102,0.3);">📞</a>
+        </div>
+      </div>
+
+      <!-- Timeline steps -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--choco-lt);text-transform:uppercase;margin-bottom:10px;">Order Timeline</div>
+      <div class="track-steps" style="padding-left:4px;">
+        <div class="track-step done" id="ts1">
+          <div class="track-icon">✓</div>
+          <div class="track-body">
+            <div class="track-step-name">Order Confirmed</div>
+            <div class="track-step-sub">We've received your order!</div>
+          </div>
+        </div>
+        <div class="track-step done" id="ts2">
+          <div class="track-icon">✓</div>
+          <div class="track-body">
+            <div class="track-step-name">Payment Verified</div>
+            <div class="track-step-sub">UPI payment confirmed</div>
+          </div>
+        </div>
+        <div class="track-step active" id="ts3">
+          <div class="track-icon">🍦</div>
+          <div class="track-body">
+            <div class="track-step-name">Preparing Your Order</div>
+            <div class="track-step-sub">Our artisans are handcrafting your scoops</div>
+          </div>
+        </div>
+        <div class="track-step" id="ts4">
+          <div class="track-icon">🛵</div>
+          <div class="track-body">
+            <div class="track-step-name">Out for Delivery</div>
+            <div class="track-step-sub">On the way to you!</div>
+          </div>
+        </div>
+        <div class="track-step" id="ts5">
+          <div class="track-icon">🎉</div>
+          <div class="track-body">
+            <div class="track-step-name">Delivered!</div>
+            <div class="track-step-sub">Enjoy your ice cream 🍦</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support row -->
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <a href="tel:+919050506929" style="flex:1;padding:11px;border-radius:12px;background:var(--cream);color:var(--choco);text-decoration:none;text-align:center;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;">📞 Call Store</a>
+        <a href="https://wa.me/919050506929?text=Hi! I'm tracking my order" target="_blank" style="flex:1;padding:11px;border-radius:12px;background:#25D366;color:#fff;text-decoration:none;text-align:center;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;">💬 Chat</a>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1599,6 +1666,10 @@ setInterval(()=>{ scIdx=(scIdx+1)%SC_FLAVORS.length; scRender(); }, 4000);
 
 <!-- ══ FLOATING BUTTONS ════════════════════════ -->
 <div class="fab-group">
+  <button class="fab fab-track" id="fabTrack" onclick="openTrackingFromFab()" title="Track My Order" style="display:none;background:linear-gradient(135deg,#FF5C8A,#FF9AC1);color:#fff;position:relative;">
+    🚀
+    <span style="position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:#16a34a;border:2px solid #fff;animation:lzBlink 1.5s ease-in-out infinite;"></span>
+  </button>
   <button class="fab fab-cart" onclick="openCart()" title="Cart">
   🛒
   <span class="cart-badge" id="fabBadge" style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);width:26px;height:26px;font-size:12px;;border-radius:50%;font-size:11px;font-weight:800;color:#fff;position:absolute;top:-4px;right:-4px;display:none;align-items:center;justify-content:center;border:2px solid #fff;animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);">0</span>
@@ -2242,53 +2313,219 @@ function setDelivery(mode){
       📍 Use My Current Location
     </button>
     <div id="locationStatus" style="font-size:12px;color:var(--choco-lt);text-align:center;min-height:16px;margin-bottom:6px;"></div>
-    <input id="deliveryAddress" type="text" placeholder="Or type address manually..." 
-      style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,92,138,0.2);background:#fff;font-size:13px;font-family:'Outfit',sans-serif;outline:none;color:var(--choco);"
-      onfocus="this.style.borderColor='#FF5C8A'" onblur="this.style.borderColor='rgba(255,92,138,0.2)'">
+    <div style="position:relative;">
+      <input id="deliveryAddress" type="text" placeholder="Or type address manually..." autocomplete="off"
+        style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,92,138,0.2);background:#fff;font-size:13px;font-family:'Outfit',sans-serif;outline:none;color:var(--choco);box-sizing:border-box;"
+        onfocus="this.style.borderColor='#FF5C8A'" onblur="setTimeout(()=>{this.style.borderColor='rgba(255,92,138,0.2)';hideSuggestions();},200)"
+        oninput="clearTimeout(window._sugTimer); window._sugTimer=setTimeout(()=>fetchAddressSuggestions(this.value),350)">
+      <div id="addressSuggestions" style="position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border-radius:12px;border:1.5px solid rgba(255,92,138,0.2);box-shadow:0 8px 24px rgba(42,14,5,0.12);z-index:100;max-height:240px;overflow-y:auto;display:none;"></div>
+    </div>
   </div>`;
   } else {
     info.innerHTML = '<span>🏪</span><span>Pickup ready in <strong>15 mins</strong> · Leeza, Palwal</span>';
   }
 }
 
+/* ── AUTO ADDRESS SUGGESTIONS ── */
+async function fetchAddressSuggestions(query){
+  const box = document.getElementById('addressSuggestions');
+  if(!box) return;
+  const q = query.trim();
+  if(q.length < 3){ box.style.display = 'none'; return; }
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&countrycodes=in&addressdetails=1`);
+    const data = await res.json();
+    if(!data || data.length === 0){ box.style.display = 'none'; return; }
+    box.innerHTML = data.map(item => {
+      const a = item.address || {};
+      const main = a.road || a.neighbourhood || a.suburb || a.village || a.town || item.display_name.split(',')[0];
+      const sub = [a.suburb, a.city || a.town || a.village, a.state, a.postcode].filter(Boolean).join(', ');
+      const safe = item.display_name.replace(/"/g,'&quot;');
+      return `<div onclick="selectSuggestion('${safe}', ${item.lat}, ${item.lon})" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(74,37,17,0.06);transition:background .15s;" onmouseover="this.style.background='#FFF0F3'" onmouseout="this.style.background='#fff'">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
+          <span style="font-size:14px;margin-top:1px;">📍</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--choco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${main}</div>
+            <div style="font-size:11px;color:var(--choco-lt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sub}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    box.style.display = 'block';
+  } catch(e){ box.style.display = 'none'; }
+}
+
+function selectSuggestion(addr, lat, lon){
+  const input = document.getElementById('deliveryAddress');
+  if(input) input.value = addr;
+  deliveryLat = parseFloat(lat);
+  deliveryLon = parseFloat(lon);
+  hideSuggestions();
+  showToast('📍 Address selected!');
+}
+
+function hideSuggestions(){
+  const box = document.getElementById('addressSuggestions');
+  if(box) box.style.display = 'none';
+}
+
 /* ══════════════════════════════════════════
    ORDER TRACKING
 ══════════════════════════════════════════ */
 function openTracking(orderId){
-  document.getElementById('trackOrderId').textContent = 'Order ID: ' + (orderId || currentOrderId || 'LZ000000');
+  document.getElementById('trackOrderId').textContent = orderId || currentOrderId || 'LZ000000';
   document.getElementById('trackOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  // Simulate progress
+  // Show persistent track FAB so user can reopen tracking later
+  try { localStorage.setItem('Leeza_lastOrder', orderId || currentOrderId || 'LZ000000'); } catch(e){}
+  const fab = document.getElementById('fabTrack');
+  if(fab) fab.style.display = 'flex';
+  // Reset state
+  ['ts1','ts2'].forEach(id=>{ const el=document.getElementById(id); if(el){el.classList.add('done');el.classList.remove('active');el.querySelector('.track-icon').textContent='✓';} });
+  const ts3 = document.getElementById('ts3');
+  if(ts3){ ts3.classList.remove('done'); ts3.classList.add('active'); ts3.querySelector('.track-icon').textContent='🍦'; }
+  ['ts4','ts5'].forEach(id=>{ const el=document.getElementById(id); if(el){el.classList.remove('done');el.classList.remove('active');} });
+  document.getElementById('riderCard').style.display = 'none';
+  // Init map + start simulation
+  initTrackMap();
   simulateTracking();
 }
+
 function closeTracking(){
   document.getElementById('trackOverlay').classList.remove('open');
   document.body.style.overflow = '';
+  clearInterval(trackTimer);
+  clearInterval(bikeAnimTimer);
 }
 document.getElementById('trackOverlay').addEventListener('click', function(e){
   if(e.target===this) closeTracking();
 });
+
+/* ── LIVE TRACKING MAP ── */
+let trackMapInstance = null, storeMarker = null, bikeMarker = null, homeMarker = null, routeLine = null;
+let bikeAnimTimer = null;
+const STORE_LOC = [28.1473, 77.3320]; // Palwal approximate
+
+function loadLeafletIfNeeded(cb){
+  if(window.L){ cb(); return; }
+  if(!document.getElementById('leafletCSS')){
+    const css = document.createElement('link'); css.id='leafletCSS'; css.rel='stylesheet';
+    css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    document.head.appendChild(css);
+  }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  s.onload = cb;
+  document.head.appendChild(s);
+}
+
+function initTrackMap(){
+  loadLeafletIfNeeded(()=>{
+    const container = document.getElementById('trackMap');
+    if(!container) return;
+    container.innerHTML = ''; // clear placeholder
+    if(trackMapInstance){ trackMapInstance.remove(); trackMapInstance = null; }
+
+    const customer = (deliveryLat && deliveryLon) ? [deliveryLat, deliveryLon] : [STORE_LOC[0]+0.018, STORE_LOC[1]+0.012];
+    const midLat = (STORE_LOC[0] + customer[0]) / 2;
+    const midLon = (STORE_LOC[1] + customer[1]) / 2;
+
+    trackMapInstance = L.map('trackMap',{zoomControl:false,attributionControl:false}).setView([midLat, midLon], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(trackMapInstance);
+
+    // Store marker
+    const storeIcon = L.divIcon({
+      html:'<div style="background:#4A2511;color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.25);">🏪</div>',
+      iconSize:[34,34], iconAnchor:[17,17], className:''
+    });
+    storeMarker = L.marker(STORE_LOC,{icon:storeIcon}).addTo(trackMapInstance).bindTooltip('Leeza Store',{permanent:false});
+
+    // Customer marker
+    const homeIcon = L.divIcon({
+      html:'<div style="background:#25D366;color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,0.25);">🏠</div>',
+      iconSize:[34,34], iconAnchor:[17,17], className:''
+    });
+    homeMarker = L.marker(customer,{icon:homeIcon}).addTo(trackMapInstance).bindTooltip('Your location',{permanent:false});
+
+    // Route line
+    routeLine = L.polyline([STORE_LOC, customer], {color:'#FF5C8A', weight:4, dashArray:'8,8', opacity:0.7}).addTo(trackMapInstance);
+
+    setTimeout(()=>trackMapInstance.invalidateSize(), 150);
+    trackMapInstance.fitBounds([STORE_LOC, customer], {padding:[30,30]});
+
+    // Save for bike animation
+    window._customerLoc = customer;
+  });
+}
+
+function startBikeAnimation(){
+  loadLeafletIfNeeded(()=>{
+    if(!trackMapInstance || !window._customerLoc) return;
+    const [endLat, endLon] = window._customerLoc;
+    const [startLat, startLon] = STORE_LOC;
+
+    // Bike marker
+    const bikeIcon = L.divIcon({
+      html:'<div style="background:linear-gradient(135deg,#FF5C8A,#FF9AC1);color:#fff;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #fff;box-shadow:0 4px 14px rgba(255,92,138,0.5);animation:lzBlink 1.2s ease-in-out infinite;">🛵</div>',
+      iconSize:[38,38], iconAnchor:[19,19], className:''
+    });
+    if(bikeMarker) trackMapInstance.removeLayer(bikeMarker);
+    bikeMarker = L.marker([startLat, startLon],{icon:bikeIcon}).addTo(trackMapInstance);
+
+    document.getElementById('mapOverlayInfo').style.display = 'flex';
+
+    const steps = 40;
+    let step = 0;
+    clearInterval(bikeAnimTimer);
+    bikeAnimTimer = setInterval(()=>{
+      step++;
+      const t = step / steps;
+      if(t >= 1){ clearInterval(bikeAnimTimer); return; }
+      const lat = startLat + (endLat - startLat) * t;
+      const lon = startLon + (endLon - startLon) * t;
+      bikeMarker.setLatLng([lat, lon]);
+      // Update distance text (rough haversine)
+      const R = 6371;
+      const dLat = (endLat-lat)*Math.PI/180;
+      const dLon = (endLon-lon)*Math.PI/180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat*Math.PI/180)*Math.cos(endLat*Math.PI/180)*Math.sin(dLon/2)**2;
+      const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      document.getElementById('mapDistanceText').textContent = km < 0.1 ? 'Arriving now!' : km.toFixed(2) + ' km away';
+    }, 600);
+  });
+}
 
 let trackTimer;
 function simulateTracking(){
   clearInterval(trackTimer);
   const steps = ['ts1','ts2','ts3','ts4','ts5'];
   const etas  = ['25 min','22 min','18 min','8 min','Delivered!'];
-  let current = 2; // start at step 3 (preparing)
+  const pcts  = [20, 35, 50, 80, 100];
+  const labels = ['📝 Order confirmed','💳 Payment verified','🍦 Preparing your order','🛵 On the way!','🎉 Delivered!'];
+  let current = 2;
   document.getElementById('trackEta').textContent = etas[current];
+  document.getElementById('progressFill').style.width = pcts[current] + '%';
+  document.getElementById('progressPct').textContent = pcts[current] + '%';
+  document.getElementById('progressLabel').textContent = labels[current];
+
   trackTimer = setInterval(()=>{
     current++;
     if(current >= steps.length){ clearInterval(trackTimer); return; }
-    const el = document.getElementById(steps[current]);
-    if(el){
-      el.classList.remove('active');
-      el.classList.add('done');
-      el.querySelector('.track-icon').textContent = '✓';
-      const next = document.getElementById(steps[current+1]);
-      if(next) next.classList.add('active');
-    }
+    const el = document.getElementById(steps[current-1]);
+    if(el){ el.classList.remove('active'); el.classList.add('done'); el.querySelector('.track-icon').textContent = '✓'; }
+    const cur = document.getElementById(steps[current]);
+    if(cur) cur.classList.add('active');
     document.getElementById('trackEta').textContent = etas[current];
-  }, 4000);
+    document.getElementById('progressFill').style.width = pcts[current] + '%';
+    document.getElementById('progressPct').textContent = pcts[current] + '%';
+    document.getElementById('progressLabel').textContent = labels[current];
+
+    // When "out for delivery" — show rider + start bike animation
+    if(current === 3){
+      document.getElementById('riderCard').style.display = 'block';
+      startBikeAnimation();
+    }
+  }, 5000);
 }
 
 // Add Track Order button to payment confirm flow
@@ -2468,6 +2705,27 @@ renderMenu();
 renderTestimonials();
 renderPopular();
 updateCartUI();
+
+/* Track Order FAB — opens the live tracker anytime */
+function openTrackingFromFab(){
+  let lastOrder = null;
+  try { lastOrder = localStorage.getItem('Leeza_lastOrder'); } catch(e){}
+  if(lastOrder){
+    currentOrderId = lastOrder;
+  } else {
+    currentOrderId = 'LZ' + Math.floor(100000 + Math.random() * 900000);
+  }
+  openTracking(currentOrderId);
+}
+window.openTrackingFromFab = openTrackingFromFab;
+
+/* Restore track FAB on page load if user has an existing order */
+try {
+  if(localStorage.getItem('Leeza_lastOrder')){
+    const f = document.getElementById('fabTrack');
+    if(f) f.style.display = 'flex';
+  }
+} catch(e){}
 </script>
 <!-- ══════════════════════════════════════════
      LEEZA AI CHATBOT WIDGET
