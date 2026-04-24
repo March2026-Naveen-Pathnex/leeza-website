@@ -1907,6 +1907,33 @@ function updateCartUI(){
   }
 }
 
+function selectPayMethod(method){
+  const overlay = document.getElementById('payMethodOverlay');
+  if(overlay) overlay.remove();
+
+  if(method === 'cod'){
+    // Cash on Delivery flow
+    const orderId = genOrderId();
+    currentOrderId = orderId;
+    const amount = cartTotal();
+    let msg = `Hello Leeza! 🍦 I'd like to place a *Cash on Delivery* order.\n\n`;
+    msg += `📋 Order ID: ${orderId}\n`;
+    msg += `💰 Total: ₹${amount}\n\n`;
+    msg += `🛒 Items:\n`;
+    cart.forEach((item,i)=>{ msg += `${i+1}. ${item.name} × ${item.qty} = ₹${item.price*item.qty}\n`; });
+    const addr = document.getElementById('deliveryAddress')?.value || '';
+    if(addr) msg += `\n📍 Address: ${addr}`;
+    msg += `\n\nPlease confirm my COD order. Thank you!`;
+    window.open(`https://wa.me/919050506929?text=${encodeURIComponent(msg)}`, '_blank');
+    showToast('✅ COD order sent on WhatsApp!');
+    clearCart();
+    closeCart();
+  } else {
+    // Online payment flow — open the existing payment modal
+    openPayment();
+  }
+}
+
 function addToCart(id){
   const item = MENU.find(m=>m.id===id);
   if(!item) return;
@@ -2109,6 +2136,39 @@ function genOrderId(){
 
 function openPayment(){
   if(cart.length === 0){ showToast('🛒 Add items to your cart first!'); return; }
+
+  // ← ADD THIS BELOW
+if(deliveryMode === 'delivery'){
+  if(document.getElementById('payMethodOverlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'payMethodOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3500;display:flex;align-items:flex-end;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:#fff;width:100%;max-width:500px;border-radius:28px 28px 0 0;padding:28px 24px 36px;">
+      <div style="width:40px;height:4px;background:#eee;border-radius:2px;margin:0 auto 20px;"></div>
+      <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:600;color:#4A2511;margin-bottom:6px;">How would you like to pay?</div>
+      <div style="font-size:13px;color:#6B5446;margin-bottom:24px;">Choose your preferred payment method</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button onclick="selectPayMethod('online')" style="padding:18px;border-radius:16px;border:2px solid #FF5C8A;background:#FFF0F3;font-size:15px;font-weight:700;color:#FF5C8A;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:14px;text-align:left;">
+          <span style="font-size:28px;">💳</span>
+          <div>
+            <div>Pay Now (UPI / Online)</div>
+            <div style="font-size:12px;font-weight:400;color:#6B5446;margin-top:2px;">GPay, PhonePe, Paytm, Razorpay</div>
+          </div>
+        </button>
+        <button onclick="selectPayMethod('cod')" style="padding:18px;border-radius:16px;border:2px solid #16a34a;background:#f0fdf4;font-size:15px;font-weight:700;color:#16a34a;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:14px;text-align:left;">
+          <span style="font-size:28px;">💵</span>
+          <div>
+            <div>Cash on Delivery</div>
+            <div style="font-size:12px;font-weight:400;color:#6B5446;margin-top:2px;">Pay when your order arrives</div>
+          </div>
+        </button>
+      </div>
+      <button onclick="document.getElementById('payMethodOverlay').remove()" style="margin-top:16px;width:100%;padding:12px;border-radius:999px;border:none;background:#f5f5f5;font-size:14px;color:#6B5446;cursor:pointer;font-family:'Outfit',sans-serif;">Cancel</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  return;
+}
 
   const amount  = cartTotal();
   const orderId = genOrderId();
