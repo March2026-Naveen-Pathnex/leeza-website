@@ -2177,6 +2177,27 @@ function _openPaymentDirect(){
 function openPayment(){
   if(cart.length === 0){ showToast('🛒 Add items to your cart first!'); return; }
 
+if(deliveryMode === 'delivery'){
+  const addr = document.getElementById('deliveryAddress')?.value?.trim();
+  if(!addr){
+    // Highlight the address input in red to guide the customer
+    const input = document.getElementById('deliveryAddress');
+    if(input){
+      input.style.borderColor = '#ef4444';
+      input.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)';
+      input.placeholder = '⚠️ Please enter your delivery address first!';
+      input.focus();
+      setTimeout(()=>{
+        input.style.borderColor = 'rgba(255,92,138,0.2)';
+        input.style.boxShadow = 'none';
+        input.placeholder = 'Or type address manually...';
+      }, 3000);
+    }
+    showToast('📍 Please enter your delivery address first!');
+    return;
+  }
+}
+
   // ← ADD THIS BELOW
 if(deliveryMode === 'delivery'){
   if(document.getElementById('payMethodOverlay')) return;
