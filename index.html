@@ -1912,18 +1912,24 @@ function selectPayMethod(method){
   if(overlay) overlay.remove();
 
   if(method === 'cod'){
-    // Cash on Delivery flow
     const orderId = genOrderId();
     currentOrderId = orderId;
     const amount = cartTotal();
-    let msg = `Hello Leeza! 🍦 I'd like to place a *Cash on Delivery* order.\n\n`;
-    msg += `📋 Order ID: ${orderId}\n`;
-    msg += `💰 Total: ₹${amount}\n\n`;
-    msg += `🛒 Items:\n`;
-    cart.forEach((item,i)=>{ msg += `${i+1}. ${item.name} × ${item.qty} = ₹${item.price*item.qty}\n`; });
     const addr = document.getElementById('deliveryAddress')?.value || '';
-    if(addr) msg += `\n📍 Address: ${addr}`;
-    msg += `\n\nPlease confirm my COD order. Thank you!`;
+    const mapsLink = deliveryLat ? `https://maps.google.com/?q=${deliveryLat},${deliveryLon}` : '';
+
+    let msg = `Hello Leeza! 🍦 I'd like to place a *Cash on Delivery* order.\n\n`;
+    msg += `📍 *Delivery Address:* ${addr || 'Not provided'}\n`;
+    if(mapsLink) msg += `🗺 Location: ${mapsLink}\n`;
+    msg += `\n📋 ORDER ID: ${orderId}\n`;
+    msg += `💰 Amount: ₹${amount}\n\n`;
+    msg += `🛒 Items ordered:\n`;
+    const codEmoji = {"Classic Vanilla":"🍦","Belgian Chocolate":"🍫","Strawberry Bliss":"🍓","Mango Tango":"🥭","Pistachio Dream":"🌰","Cookie Dough":"🍪","Choco Fudge Sundae":"🍨","Berry Explosion":"🫐","Caramel Crunch":"🍮","Oreo Shake":"🥤","Strawberry Shake":"🍓","Nutella Shake":"🥛","Waffle Cone Tower":"🧇","Ice Cream Cake":"🎂","Brownie Blast":"🍩"};
+    cart.forEach((item,i)=>{ const e = codEmoji[item.name]||"🍦"; msg += `${i+1}. ${e} ${item.name} × ${item.qty} = ₹${item.price*item.qty}\n`; });
+    msg += `\n💰 *Total: ₹${amount}*\n`;
+    msg += `💵 *Payment: Cash on Delivery*\n`;
+    msg += `\nKindly confirm my order. Thank you!`;
+
     window.open(`https://wa.me/919050506929?text=${encodeURIComponent(msg)}`, '_blank');
     showToast('✅ COD order sent on WhatsApp!');
     clearCart();
