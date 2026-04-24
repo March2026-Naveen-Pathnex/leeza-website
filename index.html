@@ -2283,6 +2283,10 @@ const parts = [
 const addr = parts.length ? parts.join(', ') : data.display_name;
 input.value = addr;
         status.innerHTML = '✅ Location detected!';
+        // ← ADD THESE 3 LINES BELOW
+        deliveryLat = lat;
+        deliveryLon = lon;
+        toggleMapPicker();  // opens the map automatically
         showToast('📍 Location captured successfully!');
       } catch(e){
         input.value = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
