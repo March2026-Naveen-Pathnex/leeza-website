@@ -1777,12 +1777,7 @@ setInterval(()=>{ scIdx=(scIdx+1)%SC_FLAVORS.length; scRender(); }, 4000);
 
   <div style="font-size:12px;color:#7C3AED;font-weight:600;">Amount ₹<span id="qrAmountLabel">0</span> will be auto-filled when you scan</div>
 </div>
-          <div class="pay-qr-wrap">
-            <img id="payQr" src="" alt="UPI QR Code" loading="lazy">
-          </div>
-          <div class="pay-qr-hint" style="color:#16a34a;font-weight:600;">✅ Scan QR — works on all UPI apps including PhonePe & GPay</div>
-          <div class="pay-qr-hint">UPI ID / Phone Number</div>
-
+          
 <div style="display:flex;align-items:center;gap:0;border:1.5px solid rgba(124,58,237,0.3);border-radius:999px;overflow:hidden;margin:10px auto;width:fit-content;background:#fff;">
   <span style="padding:10px 18px;font-size:15px;font-weight:700;color:#4C1D95;letter-spacing:0.5px;">9050506929</span>
   <button onclick="navigator.clipboard.writeText('9050506929').then(()=>{ this.innerHTML='✅ Copied!'; this.style.color='#16a34a'; setTimeout(()=>{ this.innerHTML='📋 Copy'; this.style.color='#7C3AED'; }, 2000); })"
