@@ -1741,7 +1741,42 @@ setInterval(()=>{ scIdx=(scIdx+1)%SC_FLAVORS.length; scRender(); }, 4000);
       <!-- QR Code -->
       <div>
         <div class="pay-sec-lbl">Scan &amp; Pay (Any UPI App)</div>
-        <div class="pay-qr-card">
+        <div class="pay-qr-card" style="background:linear-gradient(135deg,#F0EBFF,#E8E0FF);border:2px solid rgba(124,58,237,0.2);border-radius:18px;padding:18px;text-align:center;">
+
+  <!-- Pulsing attention ring around QR -->
+  <div style="position:relative;width:180px;height:180px;margin:0 auto 12px;">
+    <div style="position:absolute;inset:-8px;border-radius:16px;background:rgba(124,58,237,0.1);animation:lzPulse 2s ease-in-out infinite;"></div>
+    <div style="position:absolute;inset:-4px;border-radius:14px;border:2px dashed rgba(124,58,237,0.3);animation:spin 8s linear infinite;"></div>
+    <div class="pay-qr-wrap" style="position:relative;z-index:1;width:180px;height:180px;border-radius:12px;overflow:hidden;background:#fff;padding:6px;box-shadow:0 4px 20px rgba(124,58,237,0.2);">
+      <img id="payQr" src="" alt="UPI QR Code" loading="lazy" style="width:100%;height:100%;object-fit:contain;">
+    </div>
+  </div>
+
+  <!-- Big instruction -->
+  <div style="background:#fff;border-radius:12px;padding:10px 14px;margin-bottom:12px;border:1.5px solid rgba(124,58,237,0.15);">
+    <div style="font-size:15px;font-weight:700;color:#4C1D95;margin-bottom:4px;">📱 Open any UPI app → Scan QR</div>
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:8px;">
+      <div style="text-align:center;">
+        <div style="font-size:22px;">💜</div>
+        <div style="font-size:10px;color:#6B5446;font-weight:600;">PhonePe</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:22px;background:#4285F4;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;margin:0 auto;">G</div>
+        <div style="font-size:10px;color:#6B5446;font-weight:600;margin-top:2px;">GPay</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:22px;">💙</div>
+        <div style="font-size:10px;color:#6B5446;font-weight:600;">Paytm</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:22px;">📱</div>
+        <div style="font-size:10px;color:#6B5446;font-weight:600;">Any UPI</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:12px;color:#7C3AED;font-weight:600;">Amount ₹<span id="qrAmountLabel">0</span> will be auto-filled when you scan</div>
+</div>
           <div class="pay-qr-wrap">
             <img id="payQr" src="" alt="UPI QR Code" loading="lazy">
           </div>
@@ -2164,6 +2199,9 @@ function _openPaymentDirect(){
 
   document.getElementById('payQr').src =
     `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiStr)}&bgcolor=ffffff&color=5B21B6&margin=4`;
+
+    // ← ADD THIS LINE
+    document.getElementById('qrAmountLabel').textContent = amount;
 
   document.getElementById('upiPhonePe').href = `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
   document.getElementById('upiGPay').href    = `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
@@ -3009,6 +3047,10 @@ try {
   transition:box-shadow .3s;
   animation:lzPulse 2.5s ease-in-out infinite;
   user-select:none;touch-action:none;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 .lz-chat-fab:active{cursor:grabbing;}
 .lz-chat-fab.dragging{
