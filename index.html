@@ -1928,9 +1928,9 @@ function selectPayMethod(method){
     showToast('✅ COD order sent on WhatsApp!');
     clearCart();
     closeCart();
-  } else {
-    // Online payment flow — open the existing payment modal
-    openPayment();
+ } else {
+    // Online payment flow — skip the method picker, go direct to payment modal
+    _openPaymentDirect();
   }
 }
 
@@ -2132,6 +2132,40 @@ let currentOrderId = '';
 
 function genOrderId(){
   return 'LZ' + Math.floor(100000 + Math.random() * 900000);
+}
+
+function _openPaymentDirect(){
+  if(cart.length === 0){ showToast('🛒 Add items to your cart first!'); return; }
+
+  const amount  = cartTotal();
+  const orderId = genOrderId();
+  currentOrderId = orderId;
+
+  document.getElementById('payOrderId').textContent  = orderId;
+  document.getElementById('payAmount').textContent   = '₹' + amount;
+  document.getElementById('stepAmount').textContent  = '₹' + amount;
+
+  document.getElementById('paySummary').innerHTML = cart.map((item, i)=>`
+    <div class="pay-sum-item">
+      <span>${i+1}. ${item.name} × ${item.qty}</span>
+      <span>₹${item.price * item.qty}</span>
+    </div>
+  `).join('') + `<div class="pay-sum-item" style="margin-top:4px;font-size:14px;font-weight:700;">
+      <span>Total</span><span>₹${amount}</span>
+    </div>`;
+
+  const upiStr = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent('Order '+orderId)}`;
+
+  document.getElementById('payQr').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiStr)}&bgcolor=ffffff&color=5B21B6&margin=4`;
+
+  document.getElementById('upiPhonePe').href = `phonepe://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
+  document.getElementById('upiGPay').href    = `tez://upi/pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
+  document.getElementById('upiPaytm').href   = `paytmmp://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
+  document.getElementById('upiBhim').href    = upiStr;
+
+  document.getElementById('payOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function openPayment(){
