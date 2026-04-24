@@ -2879,11 +2879,20 @@ try {
   width:58px;height:58px;border-radius:50%;
   background:linear-gradient(135deg,#FF5C8A,#FF9AC1);
   display:flex;align-items:center;justify-content:center;
-  font-size:26px;cursor:pointer;border:none;
+  font-size:26px;cursor:grab;border:none;
   box-shadow:0 6px 28px rgba(255,92,138,0.45);
-  transition:transform .3s,box-shadow .3s;
+  transition:box-shadow .3s;
   animation:lzPulse 2.5s ease-in-out infinite;
+  user-select:none;touch-action:none;
 }
+.lz-chat-fab:active{cursor:grabbing;}
+.lz-chat-fab.dragging{
+  animation:none;
+  transform:scale(1.15);
+  box-shadow:0 14px 40px rgba(255,92,138,0.65);
+  cursor:grabbing;
+}
+.lz-chat-fab:not(.dragging):hover{transform:scale(1.1);box-shadow:0 10px 36px rgba(255,92,138,0.6);}
 @keyframes badgePop{
   0%{transform:scale(0);}
   70%{transform:scale(1.3);}
@@ -3137,6 +3146,110 @@ function toggleChat(){
   }
 }
 window.toggleChat = toggleChat;
+
+/* ══ DRAGGABLE AI FAB ══
+   Works on both mouse (desktop) and touch (mobile).
+   Snaps to nearest left/right edge after release.
+   Saves position in localStorage so it remembers across pages.
+*/
+(function(){
+  const fab = document.getElementById('lzFab');
+  if(!fab) return;
+
+  const SIZE = 58;
+  let isDragging = false;
+  let startX, startY, startLeft, startTop;
+  let hasMoved = false;
+
+  // Restore saved position
+  try {
+    const saved = JSON.parse(localStorage.getItem('leeza_fab_pos'));
+    if(saved){
+      fab.style.left = saved.left;
+      fab.style.top  = saved.top;
+      fab.style.bottom = 'auto';
+      fab.style.right  = 'auto';
+    }
+  } catch(e){}
+
+  function getPos(){
+    const rect = fab.getBoundingClientRect();
+    return { left: rect.left, top: rect.top };
+  }
+
+  function clamp(val, min, max){ return Math.max(min, Math.min(max, val)); }
+
+  function onDragStart(clientX, clientY){
+    isDragging = true;
+    hasMoved = false;
+    const pos = getPos();
+    startX = clientX;
+    startY = clientY;
+    startLeft = pos.left;
+    startTop  = pos.top;
+    fab.classList.add('dragging');
+    fab.style.transition = 'none';
+    fab.style.bottom = 'auto';
+    fab.style.right  = 'auto';
+    fab.style.left   = startLeft + 'px';
+    fab.style.top    = startTop  + 'px';
+    // Hide chat window while dragging
+    document.getElementById('lzChatWindow')?.classList.remove('open');
+  }
+
+  function onDragMove(clientX, clientY){
+    if(!isDragging) return;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+    if(Math.abs(dx) > 4 || Math.abs(dy) > 4) hasMoved = true;
+    const maxLeft = window.innerWidth  - SIZE - 8;
+    const maxTop  = window.innerHeight - SIZE - 8;
+    fab.style.left = clamp(startLeft + dx, 8, maxLeft) + 'px';
+    fab.style.top  = clamp(startTop  + dy, 8, maxTop)  + 'px';
+  }
+
+  function onDragEnd(){
+    if(!isDragging) return;
+    isDragging = false;
+    fab.classList.remove('dragging');
+    fab.style.transition = 'box-shadow .3s';
+
+    // Snap to nearest edge (left or right)
+    const currentLeft = parseFloat(fab.style.left);
+    const mid = window.innerWidth / 2;
+    const snappedLeft = currentLeft < mid ? 16 : window.innerWidth - SIZE - 16;
+    const currentTop  = parseFloat(fab.style.top);
+    const clampedTop  = clamp(currentTop, 80, window.innerHeight - SIZE - 16);
+
+    fab.style.transition = 'left .3s cubic-bezier(.34,1.56,.64,1), top .2s ease, box-shadow .3s';
+    fab.style.left = snappedLeft + 'px';
+    fab.style.top  = clampedTop  + 'px';
+
+    // Save position
+    try {
+      localStorage.setItem('leeza_fab_pos', JSON.stringify({
+        left: snappedLeft + 'px',
+        top:  clampedTop  + 'px'
+      }));
+    } catch(e){}
+
+    // If barely moved, treat as click
+    if(!hasMoved) toggleChat();
+  }
+
+  /* Mouse events */
+  fab.addEventListener('mousedown', e=>{ e.preventDefault(); onDragStart(e.clientX, e.clientY); });
+  document.addEventListener('mousemove', e=>{ onDragMove(e.clientX, e.clientY); });
+  document.addEventListener('mouseup', ()=>{ onDragEnd(); });
+
+  /* Touch events */
+  fab.addEventListener('touchstart', e=>{ e.preventDefault(); onDragStart(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+  document.addEventListener('touchmove', e=>{ if(isDragging){ e.preventDefault(); onDragMove(e.touches[0].clientX, e.touches[0].clientY); } }, {passive:false});
+  document.addEventListener('touchend', ()=>{ onDragEnd(); });
+
+  // Remove original onclick (drag logic handles clicks via hasMoved check)
+  fab.removeAttribute('onclick');
+})();
 
 /* ── Add Messages ── */
 function addBotMessage(text){
