@@ -973,18 +973,24 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
 <!-- ══ HERO ══════════════════════════════════ -->
 <section id="home" style="padding:0;">
   <div class="hero-bg">
+
+    <img src="jini.png" class="real-character jini-real" alt="Jini">
+    <img src="juju.png" class="real-character juju-real" alt="Juju">
    <!-- Jini (Realistic Female) -->
-<img src="https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80"
-     class="real-character jini-real"
+
      alt="Jini">
 
 <!-- Juju (Realistic Male) -->
-<img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=600&q=80"
-     class="real-character juju-real"
+
      alt="Juju">
     <img src="https://images.unsplash.com/photo-1740904257819-7b1f0c5341af?w=1600&h=900&fit=crop" alt="Colorful ice cream cones" loading="eager">
   </div>
-  <div class="hero-content" style="padding:120px 5% 80px; max-width:1200px; margin:0 auto; position:relative; z-index:1; width:100%;">
+  <div class="hero-content" style="
+  padding:120px 5% 80px;
+  max-width:900px;
+  margin:0 auto;
+  text-align:center;
+">
     <div class="hero-offer-pill reveal">🎉 Use code LEEZA10 — Get 10% OFF on orders above ₹299!</div>
     <h1 class="hero-title reveal d1">
   Happiness in<br>Every <span class="pink">Scoop</span>
@@ -3051,6 +3057,41 @@ try {
   transition:box-shadow .3s;
   animation:lzPulse 2.5s ease-in-out infinite;
   user-select:none;touch-action:none;
+}
+/* ═════ REALISTIC HERO CHARACTERS ═════ */
+
+.real-character{
+  position:absolute;
+  bottom:0;
+  z-index:3; /* ABOVE overlay */
+  width:420px;
+  object-fit:contain;
+  pointer-events:none;
+
+  /* premium shadow */
+  filter: drop-shadow(0 30px 60px rgba(0,0,0,0.2));
+}
+
+/* LEFT (Jini) */
+.jini-real{
+  left:-40px;
+}
+
+/* RIGHT (Juju) */
+.juju-real{
+  right:-40px;
+}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .real-character{width:300px;}
+}
+
+@media(max-width:768px){
+  .real-character{
+    width:180px;
+    opacity:0.9;
+  }
 }
 /* ══════════════════════════════════════════
    JINI & JUJU CHARACTERS
