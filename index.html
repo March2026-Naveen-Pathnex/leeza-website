@@ -3093,69 +3093,7 @@ try {
     opacity:0.9;
   }
 }
-/* ══════════════════════════════════════════
-   JINI & JUJU CHARACTERS
-══════════════════════════════════════════ */
 
-.character{
-  position:absolute;
-  bottom:30px;
-  z-index:2;
-  width:150px;
-  pointer-events:none;
-  animation:floatCharacter 4s ease-in-out infinite;
-  transition:transform .3s ease;
-}
-
-/* Female - Jini */
-.jini{
-  left:2%;
-  animation-delay:0s;
-}
-
-/* Male - Juju */
-.juju{
-  right:2%;
-  animation-delay:2s;
-}
-
-/* Floating animation */
-@keyframes floatCharacter{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-18px);}
-}
-
-/* Slight hover life (optional premium feel) */
-.character:hover{
-  transform:scale(1.05) translateY(-10px);
-}
-
-/* Tablet */
-@media(max-width:1024px){
-  .character{
-    width:120px;
-    opacity:0.95;
-  }
-}
-
-/* Mobile */
-@media(max-width:768px){
-  .character{
-    width:90px;
-    opacity:0.85;
-  }
-  .jini{left:1%;}
-  .juju{right:1%;}
-}
-
-/* Small mobile */
-@media(max-width:480px){
-  .character{
-    width:70px;
-    bottom:20px;
-    opacity:0.75;
-  }
-}
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
