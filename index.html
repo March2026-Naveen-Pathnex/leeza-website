@@ -1023,7 +1023,7 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
 <!-- ══ MARQUEE ════════════════════════════════ -->
 <div class="marquee-strip">
   <div class="marquee-track" id="marqueeTrack">
-    <span class="marquee-item">🍦 Classic Vanilla <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">🍦 Alphonso Mango <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🍫 Belgian Chocolate <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🥭 Alphonso Mango <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🍓 Strawberry Bliss <span class="marquee-sep">✦</span></span>
@@ -1031,7 +1031,7 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
     <span class="marquee-item">🌹 Rose Pistachio <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🍋 Lemon Sorbet <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🍵 Matcha Bliss <span class="marquee-sep">✦</span></span>
-    <span class="marquee-item">🍦 Classic Vanilla <span class="marquee-sep">✦</span></span>
+    <span class="marquee-item">🍦 Alphonso Mango <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🍫 Belgian Chocolate <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🥭 Alphonso Mango <span class="marquee-sep">✦</span></span>
     <span class="marquee-item">🍓 Strawberry Bliss <span class="marquee-sep">✦</span></span>
@@ -1254,7 +1254,7 @@ footer{background:var(--choco);color:#fff;padding:70px 5% 36px;}
   </div>
 </div>
 <script>
-const SC_FLAVORS=[{id:'s4',name:'Mango Tango',desc:'Alphonso mango sorbet with a tropical twist. Seasonal favourite — bursting with real fruit.',price:129,color:'#F5843A',letter:'MANGO',img:'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=700&fit=crop'},{id:'s3',name:'Strawberry Bliss',desc:'Fresh Mahabaleshwar strawberries blended into creamy perfection. Zero artificial colour.',price:109,color:'#E8567A',letter:'BERRY',img:'https://images.unsplash.com/photo-1625575080259-662349b6abf3?w=600&h=700&fit=crop'},{id:'s2',name:'Belgian Chocolate',desc:'72% single-origin Belgian cacao churned into velvet richness. For serious chocolate lovers.',price:119,color:'#7B3F20',letter:'CHOCO',img:'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&h=700&fit=crop'},{id:'s1',name:'Classic Vanilla',desc:'Madagascar vanilla bean ice cream churned fresh daily. The timeless classic, done perfectly.',price:99,color:'#D4873A',letter:'VANILLA',img:'https://images.unsplash.com/photo-1560008581-09826d1de69e?w=600&h=700&fit=crop'},{id:'su1',name:'Choco Fudge Sundae',desc:'Three scoops with hot fudge, roasted nuts & whipped cream. The ultimate indulgence.',price:249,color:'#4A2511',letter:'FUDGE',img:'https://images.unsplash.com/photo-1514849302-984523450cf4?w=600&h=700&fit=crop'}];
+const SC_FLAVORS=[{id:'s4',name:'Mango Tango',desc:'Alphonso mango sorbet with a tropical twist. Seasonal favourite — bursting with real fruit.',price:129,color:'#F5843A',letter:'MANGO',img:'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=700&fit=crop'},{id:'s3',name:'Strawberry Bliss',desc:'Fresh Mahabaleshwar strawberries blended into creamy perfection. Zero artificial colour.',price:109,color:'#E8567A',letter:'BERRY',img:'https://images.unsplash.com/photo-1625575080259-662349b6abf3?w=600&h=700&fit=crop'},{id:'s2',name:'Belgian Chocolate',desc:'72% single-origin Belgian cacao churned into velvet richness. For serious chocolate lovers.',price:119,color:'#7B3F20',letter:'CHOCO',img:'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&h=700&fit=crop'},{id:'s1',name:'Alphonso Mango',desc:'Madagascar vanilla bean ice cream churned fresh daily. The timeless classic, done perfectly.',price:99,color:'#D4873A',letter:'VANILLA',img:'https://images.unsplash.com/photo-1560008581-09826d1de69e?w=600&h=700&fit=crop'},{id:'su1',name:'Choco Fudge Sundae',desc:'Three scoops with hot fudge, roasted nuts & whipped cream. The ultimate indulgence.',price:249,color:'#4A2511',letter:'FUDGE',img:'https://images.unsplash.com/photo-1514849302-984523450cf4?w=600&h=700&fit=crop'}];
 let scIdx=0;
 function scRender(){const f=SC_FLAVORS[scIdx];document.getElementById('scWrap').style.background=`linear-gradient(135deg,${f.color} 0%,${f.color}CC 100%)`;document.getElementById('scBgLetter').textContent=f.letter;document.getElementById('scName').textContent=f.name;document.getElementById('scDesc').textContent=f.desc;document.getElementById('scPrice').textContent=f.price;const img=document.getElementById('scImg');img.style.opacity='0';img.style.transform='scale(0.88)';setTimeout(()=>{img.src=f.img;img.style.opacity='1';img.style.transform='scale(1)';img.style.transition='all .5s cubic-bezier(.34,1.56,.64,1)';},150);document.getElementById('scThumbs').innerHTML=SC_FLAVORS.slice(0,3).map(fl=>`<div class="sc-thumb ${fl.id===f.id?'active':''}" onclick="scGoTo(${SC_FLAVORS.indexOf(fl)})"><img src="${fl.img}" class="sc-thumb-img"><span class="sc-thumb-name">${fl.name}</span></div>`).join('');}
 function scNav(dir){scIdx=(scIdx+dir+SC_FLAVORS.length)%SC_FLAVORS.length;scRender();}
@@ -1303,7 +1303,7 @@ setInterval(()=>{ scIdx=(scIdx+1)%SC_FLAVORS.length; scRender(); }, 4000);
       </div>
       <div class="gallery-item">
         <img src="https://images.unsplash.com/photo-1560008581-09826d1de69e?w=600&h=400&fit=crop" alt="Vanilla" loading="lazy">
-        <div class="gallery-overlay"><span>🍦 Classic Vanilla</span></div>
+        <div class="gallery-overlay"><span>🍦 Alphonso Mango</span></div>
       </div>
       <div class="gallery-item">
         <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop" alt="Mango" loading="lazy">
@@ -1854,7 +1854,7 @@ const UPI_NAME = 'K2 Ice Cream';
 ══════════════════════════════════════════ */
 const MENU = [
   // Scoops
-  { id:"s1", name:"Classic Vanilla", desc:"Rich Madagascar vanilla bean ice cream, churned fresh daily.", price:99, cat:"Scoops", img:"https://images.unsplash.com/photo-1560008581-09826d1de69e?w=400&h=400&fit=crop", bestseller:true },
+  { id:"s1", name:"Alphonso Mango", desc:"Rich Madagascar vanilla bean ice cream, churned fresh daily.", price:99, cat:"Scoops", img:"https://images.unsplash.com/photo-1560008581-09826d1de69e?w=400&h=400&fit=crop", bestseller:true },
   { id:"s2", name:"Belgian Chocolate", desc:"Dark Belgian chocolate with cocoa nibs and velvety richness.", price:119, cat:"Scoops", img:"https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=400&fit=crop", bestseller:true },
   { id:"s3", name:"Strawberry Bliss", desc:"Fresh Mahabaleshwar strawberries blended into creamy perfection.", price:109, cat:"Scoops", img:"https://images.unsplash.com/photo-1625575080259-662349b6abf3?w=400&h=400&fit=crop", bestseller:false },
   { id:"s4", name:"Mango Tango", desc:"Alphonso mango sorbet with a tropical twist. Seasonal favourite.", price:129, cat:"Scoops", img:"https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=400&h=400&fit=crop", bestseller:true },
@@ -1954,7 +1954,7 @@ function selectPayMethod(method){
     msg += `\n📋 ORDER ID: ${orderId}\n`;
     msg += `💰 Amount: ₹${amount}\n\n`;
     msg += `🛒 Items ordered:\n`;
-    const codEmoji = {"Classic Vanilla":"🍦","Belgian Chocolate":"🍫","Strawberry Bliss":"🍓","Mango Tango":"🥭","Pistachio Dream":"🌰","Cookie Dough":"🍪","Choco Fudge Sundae":"🍨","Berry Explosion":"🫐","Caramel Crunch":"🍮","Oreo Shake":"🥤","Strawberry Shake":"🍓","Nutella Shake":"🥛","Waffle Cone Tower":"🧇","Ice Cream Cake":"🎂","Brownie Blast":"🍩"};
+    const codEmoji = {"Alphonso Mango":"🍦","Belgian Chocolate":"🍫","Strawberry Bliss":"🍓","Mango Tango":"🥭","Pistachio Dream":"🌰","Cookie Dough":"🍪","Choco Fudge Sundae":"🍨","Berry Explosion":"🫐","Caramel Crunch":"🍮","Oreo Shake":"🥤","Strawberry Shake":"🍓","Nutella Shake":"🥛","Waffle Cone Tower":"🧇","Ice Cream Cake":"🎂","Brownie Blast":"🍩"};
     cart.forEach((item,i)=>{ const e = codEmoji[item.name]||"🍦"; msg += `${i+1}. ${e} ${item.name} × ${item.qty} = ₹${item.price*item.qty}\n`; });
     msg += `\n💰 *Total: ₹${amount}*\n`;
     msg += `💵 *Payment: Cash on Delivery*\n`;
@@ -2004,7 +2004,7 @@ function checkoutWhatsApp(){
   if(cart.length===0) return;
   let msg = `Hello ${BRAND.name}! 🍦 I'd like to order:\n\n`;
   const menuEmoji = {
-  "Classic Vanilla":"🍦",
+  "Alphonso Mango":"🍦",
   "Belgian Chocolate":"🍫",
   "Strawberry Bliss":"🍓",
   "Mango Tango":"🥭",
@@ -2326,7 +2326,7 @@ let msg = `Hello K2! 🍦 I have completed my UPI payment.\n\n${deliveryLine}\n`
   msg += `📋 ORDER ID: ${currentOrderId}\n`;
   msg += `💰 Amount Paid: ₹${amount}\n\n`;
   msg += `🛒 Items ordered:\n`;
-  const waEmoji = {"Classic Vanilla":"🍦","Belgian Chocolate":"🍫","Strawberry Bliss":"🍓","Mango Tango":"🥭","Pistachio Dream":"🌰","Cookie Dough":"🍪","Choco Fudge Sundae":"🍨","Berry Explosion":"🫐","Caramel Crunch":"🍮","Oreo Shake":"🥤","Strawberry Shake":"🍓","Nutella Shake":"🥛","Waffle Cone Tower":"🧇","Ice Cream Cake":"🎂","Brownie Blast":"🍩"};
+  const waEmoji = {"Alphonso Mango":"🍦","Belgian Chocolate":"🍫","Strawberry Bliss":"🍓","Mango Tango":"🥭","Pistachio Dream":"🌰","Cookie Dough":"🍪","Choco Fudge Sundae":"🍨","Berry Explosion":"🫐","Caramel Crunch":"🍮","Oreo Shake":"🥤","Strawberry Shake":"🍓","Nutella Shake":"🥛","Waffle Cone Tower":"🧇","Ice Cream Cake":"🎂","Brownie Blast":"🍩"};
 cart.forEach((item, i)=>{ const e = waEmoji[item.name]||"🍦"; msg += `${i+1}. ${e} ${item.name} × ${item.qty} = ₹${item.price*item.qty}\n`; });
 msg += `\n💰 *Total: ₹${amount}*\n`;
   msg += `\n📸 Payment screenshot attached.\nKindly confirm my order. Thank you!`;
@@ -2350,7 +2350,7 @@ const POPULAR = [
   {id:'sh1', name:'Oreo Shake',         emoji:'🥤', price:199, orders:'1.5K orders'},
   {id:'sp1', name:'Waffle Cone Tower',  emoji:'🧇', price:299, orders:'1.2K orders'},
   {id:'s2',  name:'Belgian Chocolate',  emoji:'🍫', price:119, orders:'980 orders'},
-  {id:'s1',  name:'Classic Vanilla',    emoji:'🍦', price:99,  orders:'870 orders'},
+  {id:'s1',  name:'Alphonso Mango',     emoji:'🍦', price:99,  orders:'870 orders'},
 ];
 
 function renderPopular(){
@@ -2374,7 +2374,7 @@ const AI_PAIRS = {
   's4': { name:'Oreo Shake',     id:'sh1', reason:'Mango + Oreo = summer dream!'},
   'sh1':{ name:'Cookie Dough',   id:'s6',  reason:'Shake + cookie = perfect combo!'},
   's2': { name:'Brownie Blast',  id:'sp3', reason:'Chocolate lovers also love this!'},
-  's1': { name:'Mango Tango',    id:'s4',  reason:'Classic Vanilla fans love mango!'},
+  's1': { name:'Mango Tango',    id:'s4',  reason:'Alphonso Mango fans love mango!'},
   'sp1':{ name:'Choco Fudge Sundae', id:'su1', reason:'Tower + Sundae = ultimate feast!'},
 };
 
@@ -3262,12 +3262,12 @@ const K2_API_KEY = 'sk-ant-api03-vxwoqXiqSYmAUbU5_SzevEwanld0hEfrF1RFYtC3QZf4yxa
 const K2_SYSTEM = `You are K2, a friendly and cheerful AI assistant for "K2 Ice Cream" — a premium handcrafted ice cream brand in Mumbai (Palwal, Haryana). You speak warmly, use occasional ice cream emojis 🍦🍧🍨, and keep replies short and helpful (2-4 sentences max).
 
 MENU & PRICES:
-SCOOPS: Classic Vanilla ₹99, Belgian Chocolate ₹119, Strawberry Bliss ₹109, Mango Tango ₹129, Pistachio Dream ₹139, Cookie Dough ₹129
+SCOOPS: Alphonso Mango ₹99, Belgian Chocolate ₹119, Strawberry Bliss ₹109, Mango Tango ₹129, Pistachio Dream ₹139, Cookie Dough ₹129
 SUNDAES: Choco Fudge Sundae ₹249, Berry Explosion ₹229, Caramel Crunch ₹259
 SHAKES: Oreo Shake ₹199, Strawberry Shake ₹179, Nutella Shake ₹219
 SPECIALS: Waffle Cone Tower ₹299, Ice Cream Cake ₹599 (serves 4), Brownie Blast ₹279
 
-BESTSELLERS: Classic Vanilla, Belgian Chocolate, Mango Tango, Choco Fudge Sundae, Oreo Shake, Waffle Cone Tower
+BESTSELLERS: Alphonso Mango, Belgian Chocolate, Mango Tango, Choco Fudge Sundae, Oreo Shake, Waffle Cone Tower
 
 ABOUT:
 - 100% fresh ingredients, no preservatives, handcrafted daily
