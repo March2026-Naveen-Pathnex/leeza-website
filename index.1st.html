@@ -12,10 +12,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
-<!-- Firebase (order storage) — see SETUP_GUIDE.md to configure -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <style>
 /* ══════════════════════════════════════════
    RESET & TOKENS
@@ -1855,51 +1851,6 @@ const BRAND = {
 };
 
 /* ══════════════════════════════════════════
-   FIREBASE CONFIG  ← fill in from your Firebase
-   project (Project settings → General → Your apps).
-   See SETUP_GUIDE.md for step-by-step instructions.
-   Safe to be public: this config just identifies your
-   project, it is not a secret (Firestore security rules
-   are what actually protect your data).
-══════════════════════════════════════════ */
-const firebaseConfig = {
-  apiKey: "AIzaSyBHXk-VP3DC8L9c3uEEyF_nHxLZcnbhsnM",
-  authDomain: "k2-icecream.firebaseapp.com",
-  projectId: "k2-icecream",
-  storageBucket: "k2-icecream.firebasestorage.app",
-  messagingSenderId: "1091756119181",
-  appId: "1:1091756119181:web:fe885296288cf0aed43ec4",
-  measurementId: "G-339349FQW2"
-};
-let db = null;
-try {
-  if (firebaseConfig.apiKey !== "YOUR_FIREBASE_API_KEY") {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-  }
-} catch (e) {
-  console.warn('Firebase not configured yet — orders will only go via WhatsApp.', e);
-}
-
-/**
- * Saves an order to Firestore so it shows up on your admin
- * dashboard (admin.html). Never blocks or breaks the WhatsApp
- * order flow if Firebase isn't set up yet or the write fails —
- * WhatsApp remains the source of truth either way.
- */
-async function saveOrderToFirestore(order){
-  if(!db) return;
-  try{
-    await db.collection('orders').add({
-      ...order,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }catch(e){
-    console.warn('Could not save order to Firestore:', e);
-  }
-}
-
-/* ══════════════════════════════════════════
    UPI CONFIG  ← change these to your real UPI ID
 ══════════════════════════════════════════ */
 const UPI_ID   = '9050506929@ybl';
@@ -2028,12 +1979,6 @@ function selectPayMethod(method){
 
     window.open(`https://wa.me/919050506929?text=${encodeURIComponent(msg)}`, '_blank');
     showToast('✅ COD order sent on WhatsApp!');
-    saveOrderToFirestore({
-      orderId, items: cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),
-      total: amount, paymentMethod: 'cod', deliveryMode, address: addr,
-      location: deliveryLat ? {lat:deliveryLat, lon:deliveryLon} : null,
-      status: 'pending'
-    });
     clearCart();
     closeCart();
  } else {
@@ -2074,16 +2019,6 @@ function clearCart(){
 
 function checkoutWhatsApp(){
   if(cart.length===0) return;
-  const orderId = genOrderId();
-  currentOrderId = orderId;
-  const amount = cartTotal();
-  saveOrderToFirestore({
-    orderId, items: cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),
-    total: amount, paymentMethod: 'whatsapp', deliveryMode: (typeof deliveryMode!=='undefined'?deliveryMode:'delivery'),
-    address: document.getElementById('deliveryAddress')?.value || '',
-    location: (typeof deliveryLat!=='undefined' && deliveryLat) ? {lat:deliveryLat, lon:deliveryLon} : null,
-    status: 'pending'
-  });
   let msg = `Hello ${BRAND.name}! 🍦 I'd like to order:\n\n`;
   const menuEmoji = {
   "Alphonso Mango":"🍦",
@@ -2419,13 +2354,6 @@ a.rel = 'noopener noreferrer';
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
-
-saveOrderToFirestore({
-  orderId: currentOrderId, items: cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),
-  total: amount, paymentMethod: 'online', deliveryMode,
-  address: addr, location: deliveryLat ? {lat:deliveryLat, lon:deliveryLon} : null,
-  status: 'pending_payment_verification'
-});
 }
 
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
@@ -3342,13 +3270,10 @@ try {
 <script>
 /* ══════════════════════════════════════════
    K2 AI CHATBOT CONFIG
-   ⚠️ NEVER put an Anthropic API key here — this file
-   runs in the customer's browser, so anything here is
-   public. The key lives server-side in the Cloudflare
-   Worker (see chat-worker.js). Just point this at your
-   deployed worker URL after following SETUP_GUIDE.md.
+   ⚠️ Replace with your real Anthropic API key
+   Get one free at: console.anthropic.com
 ══════════════════════════════════════════ */
-const K2_CHAT_ENDPOINT = 'https://k2-chat.naveensingh6342.workers.dev/chat'; // ← replace after deploying chat-worker.js
+const K2_API_KEY = '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';
 
 /* ── System Prompt ── */
 const K2_SYSTEM = `You are K2, a friendly and cheerful AI assistant for "K2 Ice Cream" — a premium handcrafted ice cream brand in Mumbai (Palwal, Haryana). You speak warmly, use occasional ice cream emojis 🍦🍧🍨, and keep replies short and helpful (2-4 sentences max).
@@ -3561,12 +3486,17 @@ async function sendMessage(){
   showTyping();
 
   try {
-    // Calls YOUR backend (Cloudflare Worker), never Anthropic directly.
-    // The worker holds the real API key server-side. See chat-worker.js.
-    const response = await fetch(K2_CHAT_ENDPOINT, {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': K2_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
         system: K2_SYSTEM,
         messages: lzMessages.filter(m => m.role === 'user' || m.role === 'assistant')
       })
