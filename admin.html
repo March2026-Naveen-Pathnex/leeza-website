@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K2 — Order Dashboard</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+:root{
+  --cream:#FFFDF8; --blush:#FFF0F3; --pink:#FF6B9E; --pink-dark:#FF528A;
+  --choco:#4A2511; --choco-lt:#6B5446; --white:#fff; --green:#16a34a; --amber:#d97706; --blue:#2563eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--choco);min-height:100vh;}
+h1,h2,.brand{font-family:'Fredoka',sans-serif;}
+
+/* Login */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:#fff;border-radius:20px;padding:40px 32px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(74,37,17,0.12);text-align:center;}
+.login-card .brand{font-size:26px;color:var(--choco);margin-bottom:4px;}
+.login-card .brand span{color:var(--pink);}
+.login-card p{color:var(--choco-lt);font-size:14px;margin-bottom:24px;}
+.login-card input{width:100%;padding:13px 16px;border-radius:12px;border:1.5px solid #eee;margin-bottom:12px;font-size:14px;font-family:inherit;}
+.login-card input:focus{outline:none;border-color:var(--pink);}
+.login-card button{width:100%;padding:13px;border-radius:999px;border:none;background:var(--pink);color:#fff;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s;}
+.login-card button:hover{background:var(--pink-dark);}
+.login-error{color:#ef4444;font-size:13px;margin-top:10px;min-height:16px;}
+.login-note{font-size:12px;color:var(--choco-lt);margin-top:16px;line-height:1.5;}
+
+/* Dashboard */
+#dashScreen{display:none;}
+header{position:sticky;top:0;background:rgba(255,253,248,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,107,158,.12);padding:16px 5%;display:flex;align-items:center;justify-content:space-between;z-index:10;}
+header .brand{font-size:20px;}
+header .brand span{color:var(--pink);}
+.logout-btn{background:transparent;border:1.5px solid var(--choco);color:var(--choco);padding:8px 18px;border-radius:999px;font-size:13px;cursor:pointer;font-family:inherit;}
+.logout-btn:hover{background:var(--choco);color:#fff;}
+
+main{max-width:1000px;margin:0 auto;padding:28px 5% 60px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:28px;}
+.stat-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 20px rgba(0,0,0,.05);}
+.stat-num{font-family:'Fredoka',sans-serif;font-size:28px;font-weight:700;color:var(--pink);}
+.stat-label{font-size:12px;color:var(--choco-lt);margin-top:2px;}
+
+.filter-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.filter-btn{padding:8px 16px;border-radius:999px;border:1.5px solid #eee;background:#fff;font-size:13px;cursor:pointer;color:var(--choco-lt);font-family:inherit;}
+.filter-btn.active{border-color:var(--pink);color:var(--pink);background:var(--blush);font-weight:600;}
+
+#ordersList{display:flex;flex-direction:column;gap:14px;}
+.order-card{background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 4px 20px rgba(0,0,0,.05);}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.order-id{font-family:'Fredoka',sans-serif;font-weight:600;font-size:16px;}
+.order-time{font-size:12px;color:var(--choco-lt);}
+.order-total{font-family:'Fredoka',sans-serif;font-weight:700;color:var(--pink);font-size:18px;}
+.order-items{font-size:13px;color:var(--choco-lt);line-height:1.7;margin-bottom:10px;}
+.order-meta{font-size:12px;color:var(--choco-lt);margin-bottom:12px;}
+.order-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+.status-select{padding:8px 12px;border-radius:10px;border:1.5px solid #eee;font-size:13px;font-family:inherit;cursor:pointer;}
+.pay-tag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;}
+.pay-cod{background:#f0fdf4;color:var(--green);}
+.pay-online{background:#eff6ff;color:var(--blue);}
+.pay-whatsapp{background:#f0fdf4;color:#25D366;}
+.pay-pending_payment_verification{background:#fffbeb;color:var(--amber);}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--choco-lt);}
+.empty-state .icon{font-size:44px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="brand">K2<span>.</span> Admin</div>
+    <p>Sign in to view and manage orders</p>
+    <input type="email" id="loginEmail" placeholder="Admin email" autocomplete="username">
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+    <button onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-note">Create your admin account in Firebase Console → Authentication → Users → Add user. See SETUP_GUIDE.md.</div>
+  </div>
+</div>
+
+<div id="dashScreen">
+  <header>
+    <div class="brand">K2<span>.</span> Order Dashboard</div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </header>
+  <main>
+    <div class="stats">
+      <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Orders</div></div>
+      <div class="stat-card"><div class="stat-num" id="statPending">0</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card"><div class="stat-num" id="statToday">0</div><div class="stat-label">Today</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRevenue">₹0</div><div class="stat-label">Revenue (all)</div></div>
+    </div>
+
+    <div class="filter-row" id="filterRow">
+      <button class="filter-btn active" data-f="all" onclick="setFilter('all')">All</button>
+      <button class="filter-btn" data-f="pending" onclick="setFilter('pending')">Pending</button>
+      <button class="filter-btn" data-f="preparing" onclick="setFilter('preparing')">Preparing</button>
+      <button class="filter-btn" data-f="on_the_way" onclick="setFilter('on_the_way')">On the way</button>
+      <button class="filter-btn" data-f="delivered" onclick="setFilter('delivered')">Delivered</button>
+    </div>
+
+    <div id="ordersList"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="icon">🍦</div>
+      <div>No orders yet — new orders will appear here in real time.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   FIREBASE CONFIG — must match index.html exactly
+══════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyBHXk-VP3DC8L9c3uEEyF_nHxLZcnbhsnM",
+  authDomain: "k2-icecream.firebaseapp.com",
+  projectId: "k2-icecream",
+  storageBucket: "k2-icecream.firebasestorage.app",
+  messagingSenderId: "1091756119181",
+  appId: "1:1091756119181:web:fe885296288cf0aed43ec4",
+  measurementId: "G-339349FQW2"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let allOrders = [];
+let currentFilter = 'all';
+let unsubscribe = null;
+
+/* ── Auth ── */
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if(!email || !pass){ errEl.textContent = 'Enter email and password.'; return; }
+  auth.signInWithEmailAndPassword(email, pass).catch(err=>{
+    errEl.textContent = 'Sign-in failed. Check your email/password.';
+  });
+}
+function doLogout(){ auth.signOut(); }
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashScreen').style.display = 'block';
+    startListening();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('dashScreen').style.display = 'none';
+    if(unsubscribe) unsubscribe();
+  }
+});
+
+/* ── Orders (real-time) ── */
+function startListening(){
+  unsubscribe = db.collection('orders').orderBy('createdAt','desc').limit(200)
+    .onSnapshot(snap=>{
+      allOrders = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      render();
+    }, err=>{
+      console.error(err);
+      document.getElementById('ordersList').innerHTML =
+        '<div class="empty-state">⚠️ Could not load orders. Check your Firestore security rules (see SETUP_GUIDE.md).</div>';
+    });
+}
+
+function setFilter(f){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active', b.dataset.f===f));
+  render();
+}
+window.setFilter = setFilter;
+
+function updateStatus(orderId, status){
+  db.collection('orders').doc(orderId).update({status}).catch(err=>console.error(err));
+}
+window.updateStatus = updateStatus;
+
+function render(){
+  const list = document.getElementById('ordersList');
+  const empty = document.getElementById('emptyState');
+  const filtered = currentFilter==='all' ? allOrders : allOrders.filter(o=>o.status===currentFilter);
+
+  document.getElementById('statTotal').textContent = allOrders.length;
+  document.getElementById('statPending').textContent = allOrders.filter(o=>o.status==='pending'||o.status==='pending_payment_verification').length;
+  const todayStr = new Date().toDateString();
+  document.getElementById('statToday').textContent = allOrders.filter(o=>o.createdAt && o.createdAt.toDate && o.createdAt.toDate().toDateString()===todayStr).length;
+  document.getElementById('statRevenue').textContent = '₹' + allOrders.reduce((s,o)=>s+(o.total||0),0);
+
+  if(filtered.length===0){
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = filtered.map(o=>{
+    const time = (o.createdAt && o.createdAt.toDate) ? o.createdAt.toDate().toLocaleString('en-IN') : 'Just now';
+    const itemsHtml = (o.items||[]).map(i=>`${i.name} × ${i.qty}`).join(', ');
+    const payClass = 'pay-' + (o.paymentMethod||'cod');
+    return `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <div class="order-id">#${o.orderId||o.id}</div>
+            <div class="order-time">${time}</div>
+          </div>
+          <div class="order-total">₹${o.total||0}</div>
+        </div>
+        <div class="order-items">${itemsHtml||'—'}</div>
+        <div class="order-meta">
+          <span class="pay-tag ${payClass}">${(o.paymentMethod||'cod').replace(/_/g,' ')}</span>
+          &nbsp;·&nbsp; ${o.deliveryMode||'delivery'}${o.address ? ' — '+o.address : ''}
+        </div>
+        <div class="order-bottom">
+          <select class="status-select" onchange="updateStatus('${o.id}', this.value)">
+            ${['pending','pending_payment_verification','preparing','on_the_way','delivered','cancelled'].map(s=>
+              `<option value="${s}" ${o.status===s?'selected':''}>${s.replace(/_/g,' ')}</option>`
+            ).join('')}
+          </select>
+          ${o.location ? `<a href="https://maps.google.com/?q=${o.location.lat},${o.location.lon}" target="_blank" style="font-size:12px;color:#2563eb;">📍 View location</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+</script>
+</body>
+</html>
