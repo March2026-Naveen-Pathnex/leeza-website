@@ -310,6 +310,29 @@ section{padding:90px 5%;}
 }
 .add-btn:hover{background:#3D1C00;transform:scale(1.02);}
 .add-btn.added{background:#16a34a;}
+.stock-status{
+    margin:8px 0 12px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.in-stock{
+    color:#16a34a;
+}
+
+.low-stock{
+    color:#f97316;
+}
+
+.out-stock{
+    color:#dc2626;
+}
+
+.add-btn:disabled{
+    background:#bdbdbd;
+    cursor:not-allowed;
+    opacity:.8;
+}
 
 /* ══════════════════════════════════════════
    ABOUT
@@ -2155,9 +2178,25 @@ function renderMenu(){
           <span class="product-price">₹${item.price}</span>
         </div>
         <p class="product-desc">${item.desc}</p>
-        <button class="add-btn" id="btn-${item.id}" onclick="addToCart('${item.id}')">
-          <span>+</span> Add to Cart
-        </button>
+
+<div class="stock-status">
+${
+    item.stock <= 0
+        ? '<span class="out-stock">❌ Out of Stock</span>'
+        : item.stock <= 5
+        ? `<span class="low-stock">🔥 Only ${item.stock} left</span>`
+        : '<span class="in-stock">✅ In Stock</span>'
+}
+</div>
+
+<button
+    class="add-btn"
+    id="btn-${item.id}"
+    onclick="addToCart('${item.id}')"
+    ${item.stock <= 0 ? 'disabled' : ''}>
+    <span>+</span>
+    ${item.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+</button>
       </div>
     </div>
   `).join('');
@@ -2192,7 +2231,7 @@ function initMenu(){
     } else {
       MENU = snap.docs
         .map(d=>({ id:d.id, ...d.data() }))
-        .filter(m=>m.available !== false);
+        .filter(m => m.available !== false && m.stock > 0);
     }
     renderMenuTabs();
     renderMenu();
