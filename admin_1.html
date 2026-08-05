@@ -427,9 +427,32 @@ catList.innerHTML = uniqueCats
         <div class="menu-item-card ${item.available===false ? 'unavailable' : ''}">
           <img class="menu-item-thumb" src="${item.img||''}" onerror="this.style.visibility='hidden'" alt="">
           <div class="menu-item-info">
-            <div class="menu-item-name">${item.name}${item.bestseller ? ' ⭐' : ''}${item.available===false ? ' <span style="font-weight:400;color:#ef4444;">(hidden)</span>' : ''}</div>
-            <div class="menu-item-desc">${item.desc||''}</div>
-          </div>
+
+    <div class="menu-item-name">
+        ${item.name}
+        ${item.bestseller ? ' ⭐' : ''}
+        ${item.available===false ? ' <span style="color:red">(Hidden)</span>' : ''}
+    </div>
+
+    <div class="menu-item-desc">
+        ${item.desc || ''}
+    </div>
+
+    <div style="margin-top:8px;font-size:13px;color:#666;">
+
+        <b>Stock:</b> ${item.stock ?? 0}
+
+        &nbsp;&nbsp;
+
+        ${
+            (item.stock ?? 0) > 0
+            ? '<span style="color:green;font-weight:600;">✅ Available</span>'
+            : '<span style="color:red;font-weight:600;">❌ Out of Stock</span>'
+        }
+
+    </div>
+
+</div>
           <div class="menu-item-price">₹${item.price}</div>
           <div class="menu-item-actions">
             <button class="icon-btn" onclick="editItem('${item.id}')">Edit</button>
