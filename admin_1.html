@@ -388,8 +388,18 @@ function renderMenuList(){
   const emptyEl = document.getElementById('menuEmptyState');
   const catList = document.getElementById('catList');
 
-  const cats = [...new Set(allMenuItems.map(m=>m.cat).filter(Boolean))];
-  catList.innerHTML = cats.map(c=>`<option value="${c}">`).join('');
+  const cats = [
+  "Scoops",
+  "500ml TUB",
+  "1000ml TUB",
+  ...new Set(allMenuItems.map(m => m.cat).filter(Boolean))
+];
+
+const uniqueCats = [...new Set(cats)];
+
+catList.innerHTML = uniqueCats
+  .map(c => `<option value="${c}">`)
+  .join('');
 
   if(allMenuItems.length === 0){
     listEl.innerHTML = '';
