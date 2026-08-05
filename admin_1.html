@@ -472,6 +472,7 @@ function editItem(id){
   document.getElementById('mfName').value = item.name || '';
   document.getElementById('mfCat').value = item.cat || '';
   document.getElementById('mfPrice').value = item.price || '';
+  document.getElementById('mfStock').value = item.stock || 0;
   document.getElementById('mfImg').value = item.img || '';
   document.getElementById('mfDesc').value = item.desc || '';
   document.getElementById('mfBestseller').checked = !!item.bestseller;
@@ -498,6 +499,7 @@ async function saveMenuItem(){
   const name = document.getElementById('mfName').value.trim();
   const cat = document.getElementById('mfCat').value.trim();
   const price = parseFloat(document.getElementById('mfPrice').value);
+  const stock = parseInt(document.getElementById('mfStock').value) || 0;
   const img = document.getElementById('mfImg').value.trim();
   const desc = document.getElementById('mfDesc').value.trim();
   const bestseller = document.getElementById('mfBestseller').checked;
@@ -508,7 +510,16 @@ async function saveMenuItem(){
     return;
   }
 
-  const data = { name, cat, price, img, desc, bestseller, available };
+  const data = {
+    name,
+    cat,
+    price,
+    stock,
+    img,
+    desc,
+    bestseller,
+    available
+};
 
   try{
     if(editingId){
