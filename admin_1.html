@@ -144,6 +144,11 @@ main{max-width:1000px;margin:0 auto;padding:28px 5% 60px;}
       <button class="filter-btn" data-f="delivered" onclick="setFilter('delivered')">Delivered</button>
     </div>
 
+    <div class="filter-row" style="margin-top:-10px;">
+  <input type="date" id="dateFilter" class="filter-btn" style="cursor:pointer;" onchange="setDateFilter(this.value)">
+  <button class="filter-btn" onclick="clearDateFilter()">Clear date</button>
+</div>
+
     <div id="ordersList"></div>
     <div class="empty-state" id="emptyState" style="display:none;">
       <div class="icon">🍦</div>
@@ -213,6 +218,7 @@ const db = firebase.firestore();
 
 let allOrders = [];
 let currentFilter = 'all';
+let selectedDate = null; // 'YYYY-MM-DD' or null
 let unsubscribe = null;
 
 /* ── Auth ── */
@@ -262,6 +268,19 @@ function setFilter(f){
 }
 window.setFilter = setFilter;
 
+function setDateFilter(value){
+  selectedDate = value || null;
+  render();
+}
+window.setDateFilter = setDateFilter;
+
+function clearDateFilter(){
+  selectedDate = null;
+  document.getElementById('dateFilter').value = '';
+  render();
+}
+window.clearDateFilter = clearDateFilter;
+
 function updateStatus(orderId, status){
   db.collection('orders').doc(orderId).update({status}).catch(err=>console.error(err));
 }
@@ -270,7 +289,18 @@ window.updateStatus = updateStatus;
 function render(){
   const list = document.getElementById('ordersList');
   const empty = document.getElementById('emptyState');
-  const filtered = currentFilter==='all' ? allOrders : allOrders.filter(o=>o.status===currentFilter);
+  let filtered = currentFilter==='all' ? allOrders : allOrders.filter(o=>o.status===currentFilter);
+
+  if(selectedDate){
+    filtered = filtered.filter(o=>{
+      if(!o.createdAt || !o.createdAt.toDate) return false;
+      const d = o.createdAt.toDate();
+      const localDate = d.getFullYear() + '-' +
+        String(d.getMonth()+1).padStart(2,'0') + '-' +
+        String(d.getDate()).padStart(2,'0');
+      return localDate === selectedDate;
+    });
+  }
 
   document.getElementById('statTotal').textContent = allOrders.length;
   document.getElementById('statPending').textContent = allOrders.filter(o=>o.status==='pending'||o.status==='pending_payment_verification').length;
