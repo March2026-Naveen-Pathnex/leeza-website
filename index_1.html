@@ -2817,30 +2817,36 @@ async function fetchAddressSuggestions(query){
   const q = query.trim();
   if(q.length < 3){ box.style.display = 'none'; return; }
   try {
+
     const service = new google.maps.places.AutocompleteService();
 
-service.getPlacePredictions(
-{
-    input: q,
-    componentRestrictions: { country: "in" }
-},
-(predictions, status) => {
+    service.getPlacePredictions(
+    {
+        input: q,
+        componentRestrictions: { country: "in" }
+    },
+    (predictions, status) => {
 
-    if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
-        box.style.display = "none";
-        return;
-    }
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+            box.style.display = "none";
+            return;
+        }
 
-    box.innerHTML = predictions.map(item => `
-        <div onclick="selectGooglePlace('${item.place_id}')"
-             style="padding:12px;cursor:pointer;border-bottom:1px solid #eee;">
-            📍 ${item.description}
-        </div>
-    `).join("");
+        box.innerHTML = predictions.map(item => `
+            <div onclick="selectGooglePlace('${item.place_id}')"
+                 style="padding:12px;cursor:pointer;border-bottom:1px solid #eee;">
+                 📍 ${item.description}
+            </div>
+        `).join("");
 
-    box.style.display = "block";
+        box.style.display = "block";
 
-});&format=json&limit=5&countrycodes=in&addressdetails=1`);
+    });
+
+}
+catch(e){
+    box.style.display = "none";
+}
     const data = await res.json();
     if(!data || data.length === 0){ box.style.display = 'none'; return; }
     box.innerHTML = data.map(item => {
