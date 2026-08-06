@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <style>
 :root{
@@ -177,7 +178,10 @@ main{max-width:1000px;margin:0 auto;padding:28px 5% 60px;}
                placeholder="Stock Quantity"
                min="0"
                value="0">
-          <input type="text" id="mfImg" placeholder="Image URL (e.g. images/mango.png)">
+          <input
+    type="file"
+    id="mfImg"
+    accept="image/*">
           <input type="text" id="mfDesc" placeholder="Short description" style="grid-column:1/-1;">
         </div>
         <div class="menu-form-checks">
@@ -215,6 +219,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage(); 
 
 let allOrders = [];
 let currentFilter = 'all';
@@ -503,7 +508,6 @@ function editItem(id){
   document.getElementById('mfCat').value = item.cat || '';
   document.getElementById('mfPrice').value = item.price || '';
   document.getElementById('mfStock').value = item.stock || 0;
-  document.getElementById('mfImg').value = item.img || '';
   document.getElementById('mfDesc').value = item.desc || '';
   document.getElementById('mfBestseller').checked = !!item.bestseller;
   document.getElementById('mfAvailable').checked = item.available !== false;
@@ -530,7 +534,23 @@ async function saveMenuItem(){
   const cat = document.getElementById('mfCat').value.trim();
   const price = parseFloat(document.getElementById('mfPrice').value);
   const stock = parseInt(document.getElementById('mfStock').value) || 0;
-  const img = document.getElementById('mfImg').value.trim();
+  const file = document.getElementById("mfImg").files[0];
+
+let img = editingId
+    ? (allMenuItems.find(m => m.id === editingId)?.img || "")
+    : "";
+
+if(file){
+
+    const fileName = Date.now() + "_" + file.name;
+
+    const ref = storage.ref("menu/" + fileName);
+
+    await ref.put(file);
+
+    img = await ref.getDownloadURL();
+
+}
   const desc = document.getElementById('mfDesc').value.trim();
   const bestseller = document.getElementById('mfBestseller').checked;
   const available = document.getElementById('mfAvailable').checked;
