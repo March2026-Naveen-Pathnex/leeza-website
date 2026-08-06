@@ -2814,58 +2814,44 @@ function confirmMapPicker(){
 async function fetchAddressSuggestions(query){
   const box = document.getElementById('addressSuggestions');
   if(!box) return;
+
   const q = query.trim();
-  if(q.length < 3){ box.style.display = 'none'; return; }
+
+  if(q.length < 3){
+      box.style.display = 'none';
+      return;
+  }
+
   try {
 
-    const service = new google.maps.places.AutocompleteService();
+      const service = new google.maps.places.AutocompleteService();
 
-    service.getPlacePredictions(
-    {
-        input: q,
-        componentRestrictions: { country: "in" }
-    },
-    (predictions, status) => {
+      service.getPlacePredictions(
+      {
+          input: q,
+          componentRestrictions: { country: "in" }
+      },
+      (predictions, status) => {
 
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
-            box.style.display = "none";
-            return;
-        }
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+              box.style.display = "none";
+              return;
+          }
 
-        box.innerHTML = predictions.map(item => `
-            <div onclick="selectGooglePlace('${item.place_id}')"
-                 style="padding:12px;cursor:pointer;border-bottom:1px solid #eee;">
-                 📍 ${item.description}
-            </div>
-        `).join("");
+          box.innerHTML = predictions.map(item => `
+              <div onclick="selectGooglePlace('${item.place_id}')"
+                   style="padding:12px;cursor:pointer;border-bottom:1px solid #eee;">
+                  📍 ${item.description}
+              </div>
+          `).join("");
 
-        box.style.display = "block";
+          box.style.display = "block";
 
-    });
+      });
 
-}
-catch(e){
-    box.style.display = "none";
-}
-    const data = await res.json();
-    if(!data || data.length === 0){ box.style.display = 'none'; return; }
-    box.innerHTML = data.map(item => {
-      const a = item.address || {};
-      const main = a.road || a.neighbourhood || a.suburb || a.village || a.town || item.display_name.split(',')[0];
-      const sub = [a.suburb, a.city || a.town || a.village, a.state, a.postcode].filter(Boolean).join(', ');
-      const safe = item.display_name.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-      return `<div onclick="selectSuggestion(&quot;${safe}&quot;, ${item.lat}, ${item.lon})" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(74,37,17,0.06);transition:background .15s;" onmouseover="this.style.background='#FFF0F3'" onmouseout="this.style.background='#fff'">
-        <div style="display:flex;align-items:flex-start;gap:8px;">
-          <span style="font-size:14px;margin-top:1px;">📍</span>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;color:var(--choco);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${main}</div>
-            <div style="font-size:11px;color:var(--choco-lt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sub}</div>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-    box.style.display = 'block';
-  } catch(e){ box.style.display = 'none'; }
+  } catch(e){
+      box.style.display = "none";
+  }
 }
 
 function selectSuggestion(addr, lat, lon){
@@ -2875,6 +2861,40 @@ function selectSuggestion(addr, lat, lon){
   deliveryLon = parseFloat(lon);
   hideSuggestions();
   showToast('📍 Address selected!');
+}
+let placesService;
+
+function selectGooglePlace(placeId){
+
+    if(!placesService){
+
+        const div = document.createElement("div");
+
+        placesService = new google.maps.places.PlacesService(div);
+
+    }
+
+    placesService.getDetails(
+    {
+        placeId: placeId,
+        fields: ["formatted_address","geometry"]
+    },
+    (place,status)=>{
+
+        if(status !== google.maps.places.PlacesServiceStatus.OK || !place){
+            return;
+        }
+
+        document.getElementById("deliveryAddress").value =
+            place.formatted_address;
+
+        deliveryLat = place.geometry.location.lat();
+        deliveryLon = place.geometry.location.lng();
+
+        hideSuggestions();
+
+    });
+
 }
 
 function hideSuggestions(){
