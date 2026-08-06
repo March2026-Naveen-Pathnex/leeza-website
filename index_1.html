@@ -15,6 +15,7 @@
 <!-- Firebase (order storage) — see SETUP_GUIDE.md to configure -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCspmU6KWHCT-72_T8E8cahI9kfeNOWmPQ&libraries=places"></script>
 
 <style>
 /* ══════════════════════════════════════════
@@ -2816,7 +2817,30 @@ async function fetchAddressSuggestions(query){
   const q = query.trim();
   if(q.length < 3){ box.style.display = 'none'; return; }
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&countrycodes=in&addressdetails=1`);
+    const service = new google.maps.places.AutocompleteService();
+
+service.getPlacePredictions(
+{
+    input: q,
+    componentRestrictions: { country: "in" }
+},
+(predictions, status) => {
+
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+        box.style.display = "none";
+        return;
+    }
+
+    box.innerHTML = predictions.map(item => `
+        <div onclick="selectGooglePlace('${item.place_id}')"
+             style="padding:12px;cursor:pointer;border-bottom:1px solid #eee;">
+            📍 ${item.description}
+        </div>
+    `).join("");
+
+    box.style.display = "block";
+
+});&format=json&limit=5&countrycodes=in&addressdetails=1`);
     const data = await res.json();
     if(!data || data.length === 0){ box.style.display = 'none'; return; }
     box.innerHTML = data.map(item => {
