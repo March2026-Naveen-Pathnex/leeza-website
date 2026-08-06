@@ -2229,9 +2229,23 @@ function initMenu(){
     if(snap.empty){
       MENU = SEED_MENU;
     } else {
-      MENU = snap.docs
-        .map(d=>({ id:d.id, ...d.data() }))
-        .filter(m => m.available !== false && m.stock > 0);
+      const allItems = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+}));
+
+console.log("Firestore Menu:", allItems);
+
+MENU = allItems.filter(m => {
+    console.log(
+        m.name,
+        "stock =", m.stock,
+        "available =", m.available,
+        "passes =", (m.available !== false && m.stock > 0)
+    );
+
+    return m.available !== false && m.stock > 0;
+});
     }
     renderMenuTabs();
     renderMenu();
